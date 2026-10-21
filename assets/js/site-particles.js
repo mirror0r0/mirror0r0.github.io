@@ -1,7 +1,10 @@
 /* ==========================================================================
    PaperMod · Tidewater particles
-   轻量 Canvas 背景：20px 正六边形点阵，带鼠标吸附 / 左键排斥 / 右键增强。
-   仅负责绘制；配色从 custom.css 的 CSS 变量读取。
+   20px 正六边形点阵：
+   - 鼠标吸附 / 左键排斥 / 右键增强；
+   - 每 4 帧随机挑选局部 2 或 3 颗粒子做换位、轮换动画；
+   - 换位会轻微牵引附近几颗粒子。
+   配色从 custom.css 的 CSS 变量读取。
    ========================================================================== */
 
 (() => {
@@ -25,7 +28,14 @@
     const DAMPING = 0.90;
     const MAX_OFFSET = 145;
     const MAX_SPEED = 4.5;
-    const IDLE_FRAMES = 150;
+
+    const SWAP_EVERY_FRAMES = 4;
+    const SWAP_RADIUS = 104;
+    const SWAP_MIN_DURATION = 12;
+    const SWAP_MAX_DURATION = 20;
+    const SWAP_COOLDOWN = 26;
+    const SWAP_NUDGE_RADIUS = 70;
+    const SWAP_NUDGE_COUNT = 5;
 
     const html = document.documentElement;
     const canvas = document.createElement("canvas");
@@ -57,7 +67,7 @@
     let particles = [];
     let raf = 0;
     let lastFrame = 0;
-    let idleFrames = 0;
+    let frameCount = 0;
     let resizeTimer = 0;
 
     let colors = {
@@ -101,7 +111,9 @@
                     y,
                     vx: 0,
                     vy: 0,
-                    r: 0.85 + seed * 0.7
+                    r: 0.85 + seed * 0.7,
+                    swap: null,
+                    cooldown: 0
                 });
             }
         }
@@ -129,6 +141,8 @@
         particle.y = particle.hy;
         particle.vx = 0;
         particle.vy = 0;
+        particle.swap = null;
+        particle.cooldown = 0;
     }
 
     function resetAll() {
@@ -137,14 +151,197 @@
         }
     }
 
+    function easeInOutCubic(t) {
+        return t < 0.5
+            ? 4 * t * t * t
+            : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    function canSwap(particle) {
+        return Boolean(particle) && !particle.swap && particle.cooldown <= 0;
+    }
+
+    function isOnScreen(particle) {
+        return (
+            particle.x >= 0 &&
+            particle.x <= width &&
+            particle.y >= 0 &&
+            particle.y <= height
+        );
+    }
+
+    function pickLocalParticles(origin, count) {
+        const candidates = [];
+        const radiusSq = SWAP_RADIUS * SWAP_RADIUS;
+
+        for (let i = 0; i < particles.length; i += 1) {
+            const particle = particles[i];
+
+            if (particle === origin || !canSwap(particle) || !isOnScreen(particle)) {
+                continue;
+            }
+
+            const dx = particle.x - origin.x;
+            const dy = particle.y - origin.y;
+
+            if (dx * dx + dy * dy <= radiusSq) {
+                candidates.push(particle);
+            }
+        }
+
+        const picked = [];
+
+        while (picked.length < count && candidates.length > 0) {
+            const index = Math.floor(Math.random() * candidates.length);
+            picked.push(candidates.splice(index, 1)[0]);
+        }
+
+        return picked;
+    }
+
+    function startParticleSwap(particle, toX, toY, duration) {
+        const dx = toX - particle.x;
+        const dy = toY - particle.y;
+        const length = Math.hypot(dx, dy) || 1;
+
+        particle.swap = {
+            fromX: particle.x,
+            fromY: particle.y,
+            toX,
+            toY,
+            elapsed: 0,
+            duration,
+            arc: (Math.random() * 2 - 1) * Math.min(7, 2 + length * 0.035),
+            perpX: -dy / length,
+            perpY: dx / length
+        };
+        particle.vx = 0;
+        particle.vy = 0;
+        particle.cooldown = 0;
+    }
+
+    function nudgeNearbyParticles(centerX, centerY, excluded) {
+        const radiusSq = SWAP_NUDGE_RADIUS * SWAP_NUDGE_RADIUS;
+        const start = Math.floor(Math.random() * particles.length);
+        let nudged = 0;
+
+        for (let step = 0; step < particles.length && nudged < SWAP_NUDGE_COUNT; step += 1) {
+            const particle = particles[(start + step) % particles.length];
+
+            if (excluded.includes(particle) || !canSwap(particle)) {
+                continue;
+            }
+
+            const dx = centerX - particle.x;
+            const dy = centerY - particle.y;
+            const distanceSq = dx * dx + dy * dy;
+
+            if (distanceSq === 0 || distanceSq > radiusSq) {
+                continue;
+            }
+
+            const distance = Math.sqrt(distanceSq);
+            const strength = 0.22 * (1 - distance / SWAP_NUDGE_RADIUS);
+
+            // 朝换位中心轻拉，并带一点切向扰动。
+            particle.vx += (dx / distance) * strength + (-dy / distance) * strength * 0.35;
+            particle.vy += (dy / distance) * strength + (dx / distance) * strength * 0.35;
+            nudged += 1;
+        }
+    }
+
+    function triggerParticleSwap() {
+        if (particles.length < 2) {
+            return;
+        }
+
+        let origin = null;
+
+        for (let attempt = 0; attempt < 8; attempt += 1) {
+            const candidate = particles[Math.floor(Math.random() * particles.length)];
+
+            if (canSwap(candidate) && isOnScreen(candidate)) {
+                origin = candidate;
+                break;
+            }
+        }
+
+        if (!origin) {
+            return;
+        }
+
+        const useThree = Math.random() < 0.38;
+        const others = pickLocalParticles(origin, useThree ? 2 : 1);
+
+        if (others.length < (useThree ? 2 : 1)) {
+            return;
+        }
+
+        const group = [origin, ...others];
+        const centerX = group.reduce((sum, particle) => sum + particle.x, 0) / group.length;
+        const centerY = group.reduce((sum, particle) => sum + particle.y, 0) / group.length;
+        const duration = SWAP_MIN_DURATION + Math.random() * (SWAP_MAX_DURATION - SWAP_MIN_DURATION);
+
+        nudgeNearbyParticles(centerX, centerY, group);
+
+        if (useThree) {
+            const targets = group.map((particle) => ({ x: particle.x, y: particle.y }));
+
+            startParticleSwap(group[0], targets[1].x, targets[1].y, duration);
+            startParticleSwap(group[1], targets[2].x, targets[2].y, duration);
+            startParticleSwap(group[2], targets[0].x, targets[0].y, duration);
+            return;
+        }
+
+        const first = group[0];
+        const second = group[1];
+        const firstX = first.x;
+        const firstY = first.y;
+        const secondX = second.x;
+        const secondY = second.y;
+
+        startParticleSwap(first, secondX, secondY, duration);
+        startParticleSwap(second, firstX, firstY, duration);
+    }
+
     function update(dt) {
-        let energy = 0;
         const sign = mouse.left ? REPEL : 1;
         const boost = mouse.right ? RIGHT_BOOST : 1;
         const damping = Math.pow(DAMPING, dt);
 
         for (let i = 0; i < particles.length; i += 1) {
             const particle = particles[i];
+
+            if (particle.swap) {
+                const swap = particle.swap;
+                swap.elapsed += dt;
+
+                const progress = Math.min(1, swap.elapsed / swap.duration);
+                const eased = easeInOutCubic(progress);
+                const arc = Math.sin(Math.PI * progress) * swap.arc;
+
+                particle.x = swap.fromX
+                    + (swap.toX - swap.fromX) * eased
+                    + swap.perpX * arc;
+                particle.y = swap.fromY
+                    + (swap.toY - swap.fromY) * eased
+                    + swap.perpY * arc;
+                particle.vx = 0;
+                particle.vy = 0;
+
+                if (progress >= 1) {
+                    particle.x = swap.toX;
+                    particle.y = swap.toY;
+                    particle.swap = null;
+                    particle.cooldown = SWAP_COOLDOWN;
+                }
+
+                continue;
+            }
+
+            if (particle.cooldown > 0) {
+                particle.cooldown = Math.max(0, particle.cooldown - dt);
+            }
 
             if (mouse.active) {
                 const dx = mouse.x - particle.x;
@@ -204,11 +401,7 @@
             ) {
                 resetParticle(particle);
             }
-
-            energy += Math.abs(particle.vx) + Math.abs(particle.vy);
         }
-
-        return energy;
     }
 
     function drawDot(x, y, radius) {
@@ -264,19 +457,14 @@
         const dt = Math.min(Math.max((now - lastFrame) / 16.6667, 0.25), 2);
         lastFrame = now;
 
-        const energy = update(dt);
+        frameCount += 1;
+
+        if (frameCount % SWAP_EVERY_FRAMES === 0) {
+            triggerParticleSwap();
+        }
+
+        update(dt);
         draw();
-
-        if (energy > 0.02) {
-            idleFrames = 0;
-        } else {
-            idleFrames += 1;
-        }
-
-        if (idleFrames > IDLE_FRAMES) {
-            idleFrames = 0;
-            return;
-        }
 
         raf = window.requestAnimationFrame(tick);
     }
@@ -297,7 +485,6 @@
             return;
         }
 
-        idleFrames = 0;
         ensureLoop();
     }
 
@@ -438,4 +625,5 @@
     });
 
     resizeCanvas();
+    ensureLoop();
 })();

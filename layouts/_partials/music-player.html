@@ -1,0 +1,168 @@
+{{- /*
+    音乐播放器数据与结构
+    - deta2/Music 下的 FLAC 与 LRC 在构建时扫描；
+    - 歌词按文件名去掉全角括号内容后匹配，例如「歌名（mirrorAI）.flac」→「歌名.lrc」；
+    - 只有音频、没有歌词时前端显示「暂无字幕」。
+*/ -}}
+{{- $musicDir := "deta2/Music" -}}
+{{- $entries := os.ReadDir $musicDir -}}
+{{- $lrcNames := slice -}}
+{{- range $entries -}}
+    {{- if strings.HasSuffix (lower .Name) ".lrc" -}}
+        {{- $lrcNames = $lrcNames | append .Name -}}
+    {{- end -}}
+{{- end -}}
+{{- /* 个别文件名的字形差异在匹配时做一个别名修正。 */ -}}
+{{- $lrcAliases := dict "心做匕" "心做し" -}}
+{{- $tracks := slice -}}
+{{- range $entries -}}
+    {{- if strings.HasSuffix (lower .Name) ".flac" -}}
+        {{- $base := strings.TrimSuffix (path.Ext .Name) .Name -}}
+        {{- $title := $base | replaceRE "（[^）]*）" "" | strings.TrimSpace -}}
+        {{- if not $title -}}{{- $title = $base -}}{{- end -}}
+        {{- $subtitle := "" -}}
+        {{- with findRE "（[^）]*）" $base 1 -}}
+            {{- $subtitle = index . 0 | strings.TrimPrefix "（" | strings.TrimSuffix "）" -}}
+        {{- end -}}
+        {{- $lrcName := printf "%s.lrc" $title -}}
+        {{- if not (in $lrcNames $lrcName) -}}
+            {{- with index $lrcAliases $title -}}
+                {{- $aliasName := printf "%s.lrc" . -}}
+                {{- if in $lrcNames $aliasName -}}{{- $lrcName = $aliasName -}}{{- end -}}
+            {{- end -}}
+        {{- end -}}
+        {{- $lrcURL := "" -}}
+        {{- if in $lrcNames $lrcName -}}
+            {{- $lrcURL = printf "%s/%s" $musicDir $lrcName | relURL -}}
+        {{- end -}}
+        {{- $tracks = $tracks | append (dict
+            "title" $title
+            "name" $base
+            "subtitle" $subtitle
+            "src" (printf "%s/%s" $musicDir .Name | relURL)
+            "lrc" $lrcURL
+        ) -}}
+    {{- end -}}
+{{- end -}}
+{{- $tracks = sort $tracks "title" "asc" -}}
+<script>
+    window.__papermodMusic = {
+        avatar: {{ "deta2/我的头像.jpg" | relURL | jsonify | safeJS }},
+        tracks: {{ $tracks | jsonify | safeJS }}
+    };
+</script>
+
+<aside id="site-player" class="site-player" aria-label="音乐播放器">
+    <svg class="player-icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <symbol id="pm-play" viewBox="0 0 24 24">
+            <path d="M8 5.14v13.72a1 1 0 0 0 1.54.84l10.5-6.86a1 1 0 0 0 0-1.68L9.54 4.3A1 1 0 0 0 8 5.14Z" fill="currentColor"/>
+        </symbol>
+        <symbol id="pm-pause" viewBox="0 0 24 24">
+            <rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor"/>
+            <rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor"/>
+        </symbol>
+        <symbol id="pm-prev" viewBox="0 0 24 24">
+            <rect x="4.5" y="5" width="2.3" height="14" rx="1.15" fill="currentColor"/>
+            <path d="M19 6.55v10.9a1 1 0 0 1-1.52.85l-9.1-5.45a1 1 0 0 1 0-1.7l9.1-5.45A1 1 0 0 1 19 6.55Z" fill="currentColor"/>
+        </symbol>
+        <symbol id="pm-next" viewBox="0 0 24 24">
+            <rect x="17.2" y="5" width="2.3" height="14" rx="1.15" fill="currentColor"/>
+            <path d="M5 6.55v10.9a1 1 0 0 0 1.52.85l9.1-5.45a1 1 0 0 0 0-1.7l-9.1-5.45A1 1 0 0 0 5 6.55Z" fill="currentColor"/>
+        </symbol>
+        <symbol id="pm-shuffle" viewBox="0 0 24 24">
+            <path d="M4 7h2.8c1.1 0 2.1.5 2.8 1.4l4.8 6.2c.7.9 1.7 1.4 2.8 1.4H20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="m17.5 13.5 2.8 2.5-2.8 2.5M4 17h2.8c1.1 0 2.1-.5 2.8-1.4l.8-1M14.8 8.4l.7-.9C16.2 6.5 17.2 6 18.3 6H20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="m17.5 3.5 2.8 2.5-2.8 2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </symbol>
+        <symbol id="pm-repeat" viewBox="0 0 24 24">
+            <path d="M17 4.5H8a4 4 0 0 0-4 4v1M7 19.5h9a4 4 0 0 0 4-4v-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="m14.5 2 2.5 2.5-2.5 2.5M9.5 22 7 19.5 9.5 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </symbol>
+        <symbol id="pm-repeat-one" viewBox="0 0 24 24">
+            <path d="M17 4.5H8a4 4 0 0 0-4 4v1M7 19.5h9a4 4 0 0 0 4-4v-1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <path d="m14.5 2 2.5 2.5-2.5 2.5M9.5 22 7 19.5 9.5 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M11 9.4 12.2 8.5h.1v7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </symbol>
+        <symbol id="pm-volume" viewBox="0 0 24 24">
+            <path d="M4 9.5v5h3l4 3.5v-12l-4 3.5H4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M15 8.3a5.2 5.2 0 0 1 0 7.4M17.8 5.5a9.2 9.2 0 0 1 0 13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </symbol>
+        <symbol id="pm-mute" viewBox="0 0 24 24">
+            <path d="M4 9.5v5h3l4 3.5v-12l-4 3.5H4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="m15.5 9 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </symbol>
+        <symbol id="pm-list" viewBox="0 0 24 24">
+            <path d="M5 7h14M5 12h14M5 17h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="18" cy="17" r="1.4" fill="currentColor"/>
+        </symbol>
+        <symbol id="pm-close" viewBox="0 0 24 24">
+            <path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </symbol>
+    </svg>
+
+    <div class="player-shell">
+        <div class="player-identity">
+            <div class="player-art">
+                <img src="{{ "deta2/我的头像.jpg" | relURL }}" alt="" width="48" height="48">
+            </div>
+            <div class="player-text">
+                <p class="player-title" id="player-title" aria-live="polite">正在载入…</p>
+                <p class="player-subtitle" id="player-subtitle">FLAC</p>
+            </div>
+        </div>
+
+        <div class="player-lyrics" aria-label="歌词">
+            <p class="player-lyric-current" id="player-lyric-current">暂无字幕</p>
+            <p class="player-lyric-next" id="player-lyric-next"></p>
+        </div>
+
+        <div class="player-main-controls" role="group" aria-label="播放控制">
+            <button class="player-btn" type="button" data-player-action="shuffle" aria-label="随机播放" aria-pressed="false" title="随机播放">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#pm-shuffle"/></svg>
+            </button>
+            <button class="player-btn" type="button" data-player-action="prev" aria-label="上一首" title="上一首">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#pm-prev"/></svg>
+            </button>
+            <button class="player-btn player-btn-play" id="player-play" type="button" data-player-action="play" aria-label="播放" title="播放 / 暂停">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><use id="player-play-icon" href="#pm-play"/></svg>
+            </button>
+            <button class="player-btn" type="button" data-player-action="next" aria-label="下一首" title="下一首">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#pm-next"/></svg>
+            </button>
+            <button class="player-btn" id="player-repeat" type="button" data-player-action="repeat" aria-label="循环模式：关闭" aria-pressed="false" title="循环模式：关闭">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><use id="player-repeat-icon" href="#pm-repeat"/></svg>
+            </button>
+        </div>
+
+        <div class="player-progress">
+            <span class="player-time" id="player-current-time">0:00</span>
+            <input class="player-range player-seek" id="player-seek" type="range" min="0" max="1000" step="1" value="0" aria-label="播放进度">
+            <span class="player-time" id="player-duration">0:00</span>
+        </div>
+
+        <div class="player-extra">
+            <button class="player-btn" id="player-mute" type="button" aria-label="静音" title="静音">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><use id="player-volume-icon" href="#pm-volume"/></svg>
+            </button>
+            <input class="player-range player-volume" id="player-volume" type="range" min="0" max="100" step="1" value="40" aria-label="音量" aria-valuetext="40%" style="--range-progress: 40%">
+            <span class="player-volume-value" id="player-volume-value">40%</span>
+            <button class="player-btn player-list-btn" id="player-list-toggle" type="button" aria-label="播放列表" aria-expanded="false" aria-controls="player-playlist" title="播放列表">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#pm-list"/></svg>
+                <span>列表</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="player-playlist" id="player-playlist" hidden>
+        <div class="player-playlist-head">
+            <span>播放列表</span>
+            <button class="player-playlist-close" id="player-playlist-close" type="button" aria-label="关闭播放列表">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#pm-close"/></svg>
+            </button>
+        </div>
+        <ol class="player-tracklist" id="player-tracklist"></ol>
+    </div>
+
+    <p class="sr-only" id="player-status" aria-live="polite"></p>
+    <audio class="site-audio" id="site-audio" preload="metadata"></audio>
+</aside>

@@ -1,5 +1,17 @@
-{{- /* 自定义页脚扩展：加载粒子背景脚本（PaperMod 会自动合并 assets/css/extended/*.css） */ -}}
+{{- /* 自定义页脚扩展：播放器 + 粒子背景。PaperMod 会自动合并 assets/css/extended/*.css。 */ -}}
+{{ partial "music-player.html" . }}
+
 {{- with resources.Get "js/site-particles.js" }}
+    {{- $js := . | resources.Minify }}
+    {{- if not site.Params.assets.disableFingerprinting }}
+        {{- $js = $js | resources.Fingerprint }}
+        <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+    {{- else }}
+        <script defer src="{{ $js.RelPermalink }}"></script>
+    {{- end }}
+{{- end }}
+
+{{- with resources.Get "js/site-player.js" }}
     {{- $js := . | resources.Minify }}
     {{- if not site.Params.assets.disableFingerprinting }}
         {{- $js = $js | resources.Fingerprint }}
