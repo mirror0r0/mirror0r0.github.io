@@ -1,0 +1,5 @@
+baseURL = 'https://example.org/'
+locale = 'zh-cn'
+title = '镜子的个人网站UvU'
+theme = 'PaperMod'
+ 

@@ -1,0 +1,710 @@
+/* ==========================================================================
+   PaperMod · 自定义蓝调主题
+   Palette (由深到浅，最后为暖色副调)
+   #8AAEBD  #A8C5D1  #CCDEE4  #E8ECEC  #E5D8D0
+   ========================================================================== */
+
+:root {
+    /* 色板：越靠前权重越高 */
+    --blue-1: #8AAEBD;
+    --blue-2: #A8C5D1;
+    --blue-3: #CCDEE4;
+    --blue-4: #E8ECEC;
+    --accent: #E5D8D0;
+
+    /* PaperMod 核心变量 */
+    --theme: var(--blue-4);
+    --entry: #F9FBFB;
+    --primary: #2E4854;
+    --secondary: #4F6B77;
+    --tertiary: var(--blue-2);
+    --content: #344E5A;
+    --code-block-bg: #21353E;
+    --code-bg: #F0F5F6;
+    --border: rgba(138, 174, 189, 0.30);
+    --radius: 16px;
+    --header-height: 64px;
+    --main-width: 760px;
+    --nav-width: 1080px;
+
+    /* 自定义变量 */
+    --link: #3D6B7B;
+    --link-strong: #2F5664;
+    --soft: var(--blue-3);
+    --soft-hover: var(--blue-2);
+    --on-accent: #2E4854;
+    --card-sheen: rgba(255, 255, 255, 0.72);
+    --card-shadow: 0 1px 2px rgba(46, 72, 84, 0.05),
+        0 18px 40px -24px rgba(46, 72, 84, 0.32);
+    --quote-bg: rgba(204, 222, 228, 0.42);
+    --particle-dot: rgba(138, 174, 189, 0.34);
+    --particle-active: rgba(61, 107, 123, 0.82);
+    --particle-glow: rgba(168, 197, 209, 0.22);
+
+    color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+    --theme: #14242B;
+    --entry: #1D3038;
+    --primary: #E8ECEC;
+    --secondary: #A8C5D1;
+    --tertiary: #3C5863;
+    --content: #D8E4E7;
+    --code-block-bg: #0E1D23;
+    --code-bg: #22363E;
+    --border: rgba(168, 197, 209, 0.20);
+
+    --link: #A8C5D1;
+    --link-strong: #CCDEE4;
+    --soft: #2B444F;
+    --soft-hover: #38545F;
+    --on-accent: #2E4854;
+    --card-sheen: rgba(204, 222, 228, 0.055);
+    --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.30),
+        0 18px 40px -24px rgba(0, 0, 0, 0.65);
+    --quote-bg: rgba(204, 222, 228, 0.07);
+    --particle-dot: rgba(168, 197, 209, 0.28);
+    --particle-active: rgba(229, 216, 208, 0.82);
+    --particle-glow: rgba(138, 174, 189, 0.18);
+
+    color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   基础
+   -------------------------------------------------------------------------- */
+
+html {
+    background-color: var(--theme);
+    scroll-padding-top: calc(var(--header-height) + 18px);
+    scrollbar-color: var(--blue-2) transparent;
+}
+
+/* 画布放在最底层，所以 body 必须透明、由 html 提供底色 */
+body,
+body.list,
+:root[data-theme="dark"] body,
+:root[data-theme="dark"] body.list {
+    background: transparent;
+}
+
+::selection {
+    color: var(--on-accent);
+    background: var(--accent);
+}
+
+:where(a, button, summary, input, textarea):focus-visible {
+    outline: 2px solid var(--link);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.md-content a:not(.anchor),
+.post-meta a,
+.footer a {
+    color: var(--link);
+    text-decoration-color: rgba(138, 174, 189, 0.65);
+    text-underline-offset: 0.24em;
+}
+
+.md-content a:not(.anchor):hover,
+.post-meta a:hover,
+.footer a:hover {
+    color: var(--link-strong);
+    text-decoration-color: currentColor;
+}
+
+.main,
+.footer {
+    position: relative;
+    z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   导航栏：吸顶 + 毛玻璃
+   -------------------------------------------------------------------------- */
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(232, 236, 236, 0.84);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 10px 30px -24px rgba(46, 72, 84, 0.55);
+    -webkit-backdrop-filter: blur(16px) saturate(145%);
+    backdrop-filter: blur(16px) saturate(145%);
+}
+
+:root[data-theme="dark"] .header {
+    background: rgba(20, 36, 43, 0.82);
+    box-shadow: 0 10px 30px -22px rgba(0, 0, 0, 0.85);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .header,
+    :root[data-theme="dark"] .header {
+        background: var(--theme);
+    }
+}
+
+.header-nav {
+    line-height: var(--header-height);
+}
+
+.logo a {
+    color: var(--primary);
+    font-size: clamp(20px, 2.2vw, 24px);
+    letter-spacing: -0.03em;
+    transition: color 0.2s ease;
+}
+
+.logo a:hover {
+    color: var(--link);
+}
+
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    height: 36px;
+    min-height: 36px;
+    padding: 0 0.55rem;
+    line-height: 36px;
+    border-radius: 999px;
+    color: var(--secondary);
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+    color: var(--primary);
+    background: var(--soft);
+}
+
+/* 一级菜单用最深的文字色，当前项用蓝色胶囊 + 暖色底线 */
+.menu {
+    align-items: center;
+    column-gap: 4px;
+}
+
+.menu > li {
+    display: flex;
+    align-items: center;
+}
+
+.menu a {
+    padding: 0 0.85rem;
+    color: var(--secondary);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 36px;
+    border-radius: 999px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.menu a:hover {
+    color: var(--primary);
+    background: var(--soft);
+}
+
+/* PaperMod 把 .active 放在菜单项内部的 span 上，因此用 :has() 给整颗胶囊上色 */
+.menu a.active {
+    color: var(--primary);
+    background: var(--soft);
+    box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.menu a:has(.active) {
+    color: var(--primary);
+    background: var(--soft);
+    box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.menu .active {
+    font-weight: 700;
+    text-decoration: none;
+}
+
+/* 为以后可能加入的二级菜单预留更轻的层级 */
+.menu ul {
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+}
+
+.menu ul a {
+    color: var(--secondary);
+    font-size: 14px;
+    font-weight: 400;
+}
+
+/* --------------------------------------------------------------------------
+   文章内容：字号略微增大，阅读行高更舒展
+   -------------------------------------------------------------------------- */
+
+.post-title {
+    color: var(--primary);
+    letter-spacing: -0.035em;
+}
+
+.post-description {
+    color: var(--secondary);
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+.post-content {
+    font-size: 1.08em;
+    line-height: 1.9;
+    letter-spacing: 0.005em;
+}
+
+.post-content p,
+.post-content li {
+    line-height: 1.9;
+}
+
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
+    color: var(--primary);
+    letter-spacing: -0.025em;
+}
+
+.post-content h4 {
+    font-size: 1.12em;
+}
+
+.post-content h5 {
+    font-size: 0.98em;
+}
+
+.post-content h6 {
+    font-size: 0.88em;
+}
+
+.post-content h2 {
+    padding-bottom: 0.35em;
+    border-bottom: 1px solid var(--border);
+}
+
+.post-content h2::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 0.82em;
+    margin-inline-end: 0.5em;
+    vertical-align: -0.04em;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--blue-1), var(--blue-2));
+}
+
+.post-content h3::before {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 0.72em;
+    margin-inline-end: 0.5em;
+    vertical-align: -0.02em;
+    border-radius: 999px;
+    background: var(--accent);
+}
+
+.md-content blockquote {
+    margin: 1.25rem 0;
+    padding: 0.9rem 1.2rem;
+    color: var(--secondary);
+    background: var(--quote-bg);
+    border-inline-start: 4px solid var(--blue-1);
+    border-radius: 0 12px 12px 0;
+}
+
+.md-content hr {
+    height: 1px;
+    background: var(--border);
+}
+
+.md-content table th {
+    background: var(--soft);
+}
+
+.post-content p code,
+.post-content li code {
+    padding: 0.15em 0.38em;
+    color: var(--link-strong);
+    background: var(--soft);
+    border-radius: 6px;
+}
+
+:root[data-theme="dark"] .post-content p code,
+:root[data-theme="dark"] .post-content li code {
+    color: var(--accent);
+    background: var(--code-bg);
+}
+
+mark {
+    color: var(--on-accent);
+    background: var(--accent);
+}
+
+details.toc {
+    background: rgba(204, 222, 228, 0.32);
+}
+
+:root[data-theme="dark"] details.toc {
+    background: var(--entry);
+}
+
+/* --------------------------------------------------------------------------
+   首页文章列表：卡片
+   -------------------------------------------------------------------------- */
+
+.main > .first-entry,
+.main > .post-entry {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 0;
+    margin: 0 0 20px;
+    padding: clamp(20px, 3.2vw, 30px);
+    overflow: hidden;
+    background:
+        linear-gradient(145deg, var(--card-sheen), transparent 55%),
+        var(--entry);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* 卡片顶部的色阶线 */
+.main > .first-entry::before,
+.main > .post-entry::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 0;
+    height: 3px;
+    pointer-events: none;
+    background: linear-gradient(
+        90deg,
+        var(--blue-1) 0%,
+        var(--blue-2) 38%,
+        var(--blue-3) 72%,
+        var(--accent) 100%
+    );
+}
+
+/* 首篇文章作为特色卡片 */
+.main > .first-entry {
+    min-height: 0;
+    padding: clamp(26px, 4vw, 40px);
+    background-color: var(--entry);
+    background-image:
+        radial-gradient(120% 150% at 100% 0%, rgba(229, 216, 208, 0.70), transparent 46%),
+        linear-gradient(
+            125deg,
+            rgba(204, 222, 228, 0.90) 0%,
+            rgba(232, 236, 236, 0.92) 52%,
+            rgba(229, 216, 208, 0.60) 100%
+        );
+}
+
+:root[data-theme="dark"] .main > .first-entry {
+    background-color: var(--entry);
+    background-image:
+        radial-gradient(120% 150% at 100% 0%, rgba(229, 216, 208, 0.10), transparent 46%),
+        linear-gradient(
+            125deg,
+            rgba(138, 174, 189, 0.20) 0%,
+            rgba(29, 48, 56, 0.95) 55%,
+            rgba(229, 216, 208, 0.08) 100%
+        );
+}
+
+/* 特色卡片右上角的同心圆装饰 */
+.main > .first-entry::after {
+    content: "";
+    position: absolute;
+    top: -112px;
+    right: -72px;
+    z-index: 0;
+    width: 240px;
+    height: 240px;
+    pointer-events: none;
+    border: 1px solid rgba(138, 174, 189, 0.25);
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 28px rgba(204, 222, 228, 0.18),
+        0 0 0 60px rgba(232, 236, 236, 0.12);
+}
+
+.main > .first-entry > :not(.entry-link),
+.main > .post-entry > :not(.entry-link) {
+    position: relative;
+    z-index: 1;
+}
+
+.main > .first-entry .entry-header,
+.main > .post-entry .entry-header {
+    overflow: visible;
+    display: block;
+    -webkit-line-clamp: unset;
+}
+
+.main > .first-entry .entry-header h2 {
+    margin: 0;
+    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+    line-height: 1.18;
+    letter-spacing: -0.04em;
+    transition: color 0.2s ease;
+}
+
+.main > .post-entry .entry-header h2 {
+    margin: 0;
+    font-size: clamp(1.25rem, 2.4vw, 1.55rem);
+    line-height: 1.3;
+    letter-spacing: -0.025em;
+    transition: color 0.2s ease;
+}
+
+.main > .first-entry .entry-content,
+.main > .post-entry .entry-content {
+    margin: 12px 0 18px;
+    color: var(--secondary);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-line-clamp: 3;
+}
+
+.main > .post-entry .entry-content {
+    -webkit-line-clamp: 2;
+}
+
+.main > .first-entry .entry-footer,
+.main > .post-entry .entry-footer {
+    margin-top: auto;
+    color: var(--secondary);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+}
+
+.main > .first-entry .entry-footer {
+    font-size: 14px;
+}
+
+.main > .first-entry .entry-link,
+.main > .post-entry .entry-link {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+}
+
+@media (hover: hover) {
+    .main > .first-entry:hover,
+    .main > .post-entry:hover {
+        transform: translateY(-3px);
+        border-color: var(--blue-2);
+        box-shadow:
+            0 2px 4px rgba(46, 72, 84, 0.06),
+            0 26px 52px -24px rgba(46, 72, 84, 0.42);
+    }
+
+    :root[data-theme="dark"] .main > .first-entry:hover,
+    :root[data-theme="dark"] .main > .post-entry:hover {
+        box-shadow:
+            0 2px 4px rgba(0, 0, 0, 0.30),
+            0 26px 52px -24px rgba(0, 0, 0, 0.85);
+    }
+
+    .main > .first-entry:hover .entry-header h2,
+    .main > .post-entry:hover .entry-header h2,
+    .main > .first-entry:focus-within .entry-header h2,
+    .main > .post-entry:focus-within .entry-header h2 {
+        color: var(--link);
+    }
+}
+
+.main > .first-entry:focus-within,
+.main > .post-entry:focus-within {
+    border-color: var(--blue-1);
+    outline: 2px solid rgba(138, 174, 189, 0.40);
+    outline-offset: 2px;
+}
+
+/* 宽屏时：首篇横跨两列，其余文章两列平铺 */
+@media (min-width: 900px) {
+    .main:has(> .first-entry) {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+        align-content: start;
+        max-width: calc(1080px + var(--gap) * 2);
+    }
+
+    .main:has(> .first-entry) > .first-entry,
+    .main:has(> .first-entry) > .post-content,
+    .main:has(> .first-entry) > .home-info,
+    .main:has(> .first-entry) > .page-footer {
+        grid-column: 1 / -1;
+    }
+
+    .main:has(> .first-entry) > .first-entry,
+    .main:has(> .first-entry) > .post-entry {
+        margin-bottom: 0;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   其他 PaperMod 组件
+   -------------------------------------------------------------------------- */
+
+.pagination a {
+    color: #20343D;
+    background: var(--blue-1);
+    box-shadow: 0 6px 16px -10px rgba(46, 72, 84, 0.55);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.pagination a:hover {
+    background: var(--blue-2);
+    transform: translateY(-1px);
+}
+
+.post-tags a {
+    color: var(--link-strong);
+    background: var(--soft);
+    border-color: transparent;
+}
+
+.post-tags a:hover {
+    color: var(--primary);
+    background: var(--soft-hover);
+}
+
+.share-buttons,
+.paginav {
+    background: var(--soft);
+    border-color: var(--border);
+}
+
+.terms-tags a {
+    color: var(--primary);
+    background: var(--soft);
+    border: 1px solid transparent;
+}
+
+.terms-tags a:hover {
+    background: var(--soft-hover);
+    border-color: var(--blue-1);
+}
+
+.searchbox input {
+    color: var(--primary);
+    background: var(--entry);
+    border-color: var(--soft-hover);
+}
+
+.searchResults li:hover,
+.searchResults li:focus-within {
+    border-color: var(--blue-1);
+}
+
+.top-link {
+    color: #20343D;
+    background: var(--blue-1);
+    box-shadow: 0 10px 24px -14px rgba(46, 72, 84, 0.7);
+}
+
+.top-link:hover {
+    color: #20343D;
+    background: var(--blue-2);
+}
+
+.footer {
+    color: var(--secondary);
+}
+
+/* --------------------------------------------------------------------------
+   粒子背景
+   动态部分由 assets/js/site-particles.js 驱动；
+   无 JS 或 prefers-reduced-motion 时保留静态六边形点阵兜底。
+   -------------------------------------------------------------------------- */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.8;
+    background-image:
+        radial-gradient(circle, var(--particle-dot) 1.15px, transparent 1.65px),
+        radial-gradient(circle, var(--particle-dot) 1.15px, transparent 1.65px);
+    background-position: 0 0, 10px 17.3205px;
+    background-size: 20px 34.641px, 20px 34.641px;
+    transition: opacity 0.4s ease;
+}
+
+html.particles-ready body::before {
+    opacity: 0;
+}
+
+#particle-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+html.particles-ready #particle-bg {
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+    }
+
+    .main > .first-entry,
+    .main > .post-entry,
+    .pagination a {
+        transition: none;
+    }
+
+    .main > .first-entry:hover,
+    .main > .post-entry:hover,
+    .pagination a:hover {
+        transform: none;
+    }
+}
+
+@media print {
+    .header {
+        position: static;
+    }
+
+    body::before,
+    #particle-bg,
+    .top-link {
+        display: none !important;
+    }
+}
