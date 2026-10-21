@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>镜子的个人网站UvU</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on 镜子的个人网站UvU</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 20 Oct 2026 21:52:23 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>网站创建的第一帖</title>
+      <link>http://localhost:1313/posts/my-first-post/</link>
+      <pubDate>Tue, 20 Oct 2026 21:52:23 +0800</pubDate>
+      <guid>http://localhost:1313/posts/my-first-post/</guid>
+      <description>&lt;p&gt;## ww~也是写好一个自己的网站了呢（confe【空非】：倒也不必如此开心，还没挂载上服务器）&lt;/p&gt;
+&lt;p&gt;在自己的网站上，主要编写自己的ifs茶话会，生活日志，以及一些希望分享的事情。&lt;/p&gt;
+&lt;p&gt;虽然目前只是个静态网站&amp;hellip;奴~，期待有人能教我做动态网站啦~&lt;/p&gt;
+&lt;p&gt;数据库听起来就麻烦奴&amp;hellip;&lt;/p&gt;
+&lt;p&gt;交给空非吧奴~&lt;/p&gt;
+&lt;p&gt;补充一个看过的有关科普奴~：https://zhuanlan.zhihu.com/p/364647001&lt;/p&gt;
+&lt;p&gt;帖子署名：normo【诺莫】&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

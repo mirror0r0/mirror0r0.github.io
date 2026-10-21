@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Posts on 镜子的个人网站UvU</title>
+    <link>http://localhost:1313/posts/</link>
+    <description>Recent content in Posts on 镜子的个人网站UvU</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 20 Oct 2026 21:52:23 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>镜子的生活日志</title>
+      <link>http://localhost:1313/posts/my-first-post/</link>
+      <pubDate>Tue, 20 Oct 2026 21:52:23 +0800</pubDate>
+      <guid>http://localhost:1313/posts/my-first-post/</guid>
+      <description>&lt;p&gt;## Introduction&lt;/p&gt;
+&lt;p&gt;This is **bold** text, and this is *emphasized* text.&lt;/p&gt;
+&lt;p&gt;我将会在这个地方编写日志，然后。。。呼呼呼呼&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
