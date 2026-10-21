@@ -16,4 +16,7 @@ theme = 'PaperMod'
 [params.label]
   icon = 'deta2/我的头像.jpg'
   iconHeight = 40
- 
+
+[params.assets]
+  theme_color = '#8AAEBD'
+  msapplication_TileColor = '#8AAEBD'

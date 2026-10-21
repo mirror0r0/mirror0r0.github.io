@@ -40,6 +40,7 @@
     --particle-dot: rgba(138, 174, 189, 0.34);
     --particle-active: rgba(61, 107, 123, 0.82);
     --particle-glow: rgba(168, 197, 209, 0.22);
+    --buffer-track: rgba(168, 197, 209, 0.62);
 
     color-scheme: light;
 }
@@ -67,6 +68,7 @@
     --particle-dot: rgba(168, 197, 209, 0.28);
     --particle-active: rgba(229, 216, 208, 0.82);
     --particle-glow: rgba(138, 174, 189, 0.18);
+    --buffer-track: rgba(168, 197, 209, 0.46);
 
     color-scheme: dark;
 }
@@ -399,10 +401,51 @@ details.toc {
     border: 1px solid var(--border);
     border-radius: 20px;
     box-shadow: var(--card-shadow);
+    animation: pm-card-rise 0.58s cubic-bezier(0.2, 0.72, 0.2, 1) backwards;
     transition:
         transform 0.25s ease,
         border-color 0.25s ease,
         box-shadow 0.25s ease;
+}
+
+.main > .post-entry:nth-of-type(1) {
+    animation-delay: 0.04s;
+}
+
+.main > .post-entry:nth-of-type(2) {
+    animation-delay: 0.10s;
+}
+
+.main > .post-entry:nth-of-type(3) {
+    animation-delay: 0.16s;
+}
+
+.main > .post-entry:nth-of-type(4) {
+    animation-delay: 0.22s;
+}
+
+.main > .post-entry:nth-of-type(5) {
+    animation-delay: 0.28s;
+}
+
+.main > .post-entry:nth-of-type(6) {
+    animation-delay: 0.34s;
+}
+
+.main > .post-entry:nth-of-type(7) {
+    animation-delay: 0.40s;
+}
+
+.main > .post-entry:nth-of-type(8) {
+    animation-delay: 0.46s;
+}
+
+.main > .post-entry:nth-of-type(9) {
+    animation-delay: 0.52s;
+}
+
+.main > .post-entry:nth-of-type(10) {
+    animation-delay: 0.58s;
 }
 
 /* 卡片顶部的色阶线 */
@@ -427,6 +470,7 @@ details.toc {
 .main > .first-entry {
     min-height: 0;
     padding: clamp(26px, 4vw, 40px);
+    animation-delay: 0.04s;
     background-color: var(--entry);
     background-image:
         radial-gradient(120% 150% at 100% 0%, rgba(229, 216, 208, 0.70), transparent 46%),
@@ -498,15 +542,17 @@ details.toc {
 
 .main > .first-entry .entry-content,
 .main > .post-entry .entry-content {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
     margin: 12px 0 18px;
     color: var(--secondary);
     font-size: 16px;
     line-height: 1.7;
-    -webkit-line-clamp: 3;
-}
-
-.main > .post-entry .entry-content {
-    -webkit-line-clamp: 2;
+    overflow-wrap: anywhere;
+    white-space: normal;
 }
 
 .main > .first-entry .entry-footer,
@@ -575,6 +621,11 @@ details.toc {
     .main:has(> .first-entry) > .post-content,
     .main:has(> .first-entry) > .home-info,
     .main:has(> .first-entry) > .page-footer {
+        grid-column: 1 / -1;
+    }
+
+    /* 文章数量为奇数时，让最后一张卡片横跨两列，避免右侧空一格。 */
+    .main:has(> .first-entry) > .post-entry:nth-of-type(even):last-of-type {
         grid-column: 1 / -1;
     }
 
@@ -925,6 +976,7 @@ body {
 
 .player-range {
     --range-progress: 0%;
+    --buffer-progress: 0%;
     display: block;
     width: 100%;
     height: 18px;
@@ -984,6 +1036,29 @@ body {
     min-width: 0;
 }
 
+/* 进度条里的浅色段表示已预载/已缓冲区间 */
+.player-seek::-webkit-slider-runnable-track {
+    background: linear-gradient(
+        90deg,
+        var(--blue-1) 0 var(--range-progress),
+        var(--buffer-track) var(--range-progress) var(--buffer-progress),
+        var(--border) var(--buffer-progress) 100%
+    );
+}
+
+.player-seek::-moz-range-track {
+    background: linear-gradient(
+        90deg,
+        var(--blue-1) 0 var(--range-progress),
+        var(--buffer-track) var(--range-progress) var(--buffer-progress),
+        var(--border) var(--buffer-progress) 100%
+    );
+}
+
+.player-seek::-moz-range-progress {
+    background: transparent;
+}
+
 .player-extra {
     grid-area: extra;
     display: flex;
@@ -1017,10 +1092,17 @@ body {
 
 .player-list-btn {
     width: auto;
+    flex: none;
     padding: 0 9px;
     gap: 5px;
     border-radius: 999px;
     font-size: 11px;
+    white-space: nowrap;
+}
+
+.player-extra .player-list-btn {
+    width: auto;
+    padding: 0 9px;
 }
 
 .player-list-btn svg {
@@ -1201,6 +1283,17 @@ body {
     }
 }
 
+@keyframes pm-card-rise {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @keyframes pm-lyric-in {
     from {
         opacity: 0;
@@ -1356,6 +1449,7 @@ html.particles-ready #particle-bg {
     .player-btn,
     .player-btn-play,
     .logo a img {
+        animation: none;
         transition: none;
     }
 
@@ -1380,6 +1474,11 @@ html.particles-ready #particle-bg {
 
     body {
         padding-bottom: 0;
+    }
+
+    .main > .first-entry,
+    .main > .post-entry {
+        animation: none;
     }
 
     body::before,
