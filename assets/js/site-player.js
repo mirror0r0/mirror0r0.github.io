@@ -174,8 +174,8 @@
     }
 
     function showPlaybackError() {
-        setStatus("无法播放此音频：浏览器可能不支持 FLAC，或文件路径不可用。");
-        setLyric("无法播放此音频", "浏览器可能不支持 FLAC", true);
+        setStatus("无法播放此音频：浏览器可能不支持该格式，或文件路径不可用。");
+        setLyric("无法播放此音频", "浏览器可能不支持该音频格式", true);
         updatePlayButton(false);
     }
 
@@ -530,7 +530,10 @@
 
         ui.title.textContent = currentTrack.title || currentTrack.name || "未知曲目";
         ui.title.title = currentTrack.name || currentTrack.title || "";
-        ui.subtitle.textContent = [currentTrack.subtitle, "FLAC"].filter(Boolean).join(" · ");
+        ui.subtitle.textContent = [
+            currentTrack.subtitle,
+            currentTrack.format || "AUDIO"
+        ].filter(Boolean).join(" · ");
 
         ui.seek.value = "0";
         setRangeFill(ui.seek, 0);
@@ -736,7 +739,7 @@
             subtitle.textContent = track.subtitle || "";
 
             format.className = "player-track-format";
-            format.textContent = "FLAC";
+            format.textContent = track.format || "AUDIO";
 
             text.append(title, subtitle);
             button.append(number, text, format);
@@ -1009,6 +1012,11 @@
     window.addEventListener("pagehide", () => {
         isUnloading = true;
         savePlayback(true, true);
+    });
+
+    window.addEventListener("papermod:save", () => {
+        capturePlayback();
+        savePlayback(true);
     });
 
     window.addEventListener("beforeunload", () => {

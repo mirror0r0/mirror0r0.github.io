@@ -1,0 +1,19 @@
+# 首页简介卡片内容
+# 修改这里的文字、签名、一言兜底和友情链接即可。
+title: "关于这里"
+eyebrow: "ABOUT THIS SITE"
+description: |
+  这里是镜子的个人小站，记录日常、iF 茶话会、生活日志，
+  以及一些想分享给路过的人的小东西。
+signature: "—— 镜子"
+
+hitokoto:
+  fallback: "愿每一个路过这里的人，都能带走一点好心情。"
+  source: "本站"
+
+# 友情链接示例：
+# friends:
+#   - name: "朋友的名字"
+#     url: "https://example.com"
+#     note: "朋友的网站"
+friends: []

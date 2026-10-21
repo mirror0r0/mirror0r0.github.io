@@ -420,9 +420,11 @@
             if (mouse.active) {
                 const dx = mouse.x - particle.x;
                 const dy = mouse.y - particle.y;
+                const distanceSq = dx * dx + dy * dy;
 
-                if (dx * dx + dy * dy < LINK_RADIUS_SQ) {
-                    active.push(particle);
+                if (distanceSq < LINK_RADIUS_SQ) {
+                    const strength = Math.pow(1 - Math.sqrt(distanceSq) / LINK_RADIUS, 1.35);
+                    active.push({ particle, strength });
                     continue;
                 }
             }
@@ -432,14 +434,26 @@
 
         if (active.length > 0) {
             ctx.fillStyle = colors.glow;
+
             for (let i = 0; i < active.length; i += 1) {
-                drawDot(active[i].x, active[i].y, active[i].r * 3.1);
+                const item = active[i];
+                const particle = item.particle;
+
+                ctx.globalAlpha = 0.08 + item.strength * 0.45;
+                drawDot(particle.x, particle.y, particle.r * (2.0 + item.strength * 1.6));
             }
 
             ctx.fillStyle = colors.active;
+
             for (let i = 0; i < active.length; i += 1) {
-                drawDot(active[i].x, active[i].y, active[i].r * 1.25);
+                const item = active[i];
+                const particle = item.particle;
+
+                ctx.globalAlpha = 0.35 + item.strength * 0.65;
+                drawDot(particle.x, particle.y, particle.r * (1 + item.strength * 0.35));
             }
+
+            ctx.globalAlpha = 1;
         }
     }
 
