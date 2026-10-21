@@ -2,6 +2,7 @@ baseURL = 'https://mirror0r0.github.io/'
 locale = 'zh-cn'
 title = '镜子的个人网站UvU'
 theme = 'PaperMod'
+unsafe = true
 
 # 让项目根目录的 deta2（头像、音乐、歌词）成为可访问的静态资源。
 [module]

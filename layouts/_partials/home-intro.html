@@ -1,0 +1,65 @@
+{{- $intro := hugo.Data.home_intro | default dict -}}
+{{- $title := $intro.title | default "关于这里" -}}
+{{- $eyebrow := $intro.eyebrow | default "ABOUT THIS SITE" -}}
+{{- $description := $intro.description | default "" -}}
+{{- $signature := $intro.signature | default "" -}}
+{{- $hitokoto := $intro.hitokoto | default dict -}}
+{{- $fallback := $hitokoto.fallback | default "愿每一个路过这里的人，都能带走一点好心情。" -}}
+{{- $source := $hitokoto.source | default "本站" -}}
+{{- $avatar := "deta2/我的头像.jpg" | relURL -}}
+
+<aside class="home-intro-card" data-home-intro aria-labelledby="home-intro-title">
+    <div class="home-intro-orbit" aria-hidden="true"></div>
+
+    <div class="home-intro-profile">
+        <img class="home-intro-avatar" src="{{ $avatar }}" alt="" width="64" height="64">
+        <div class="home-intro-copy">
+            <p class="home-intro-eyebrow">{{ $eyebrow }}</p>
+            <h2 class="home-intro-title" id="home-intro-title">{{ $title }}</h2>
+            {{- with $description }}
+            <div class="home-intro-description">{{ . | markdownify }}</div>
+            {{- end }}
+            {{- with $signature }}
+            <p class="home-intro-signature">{{ . }}</p>
+            {{- end }}
+        </div>
+    </div>
+
+    <div class="home-intro-side">
+        <section class="home-hitokoto" aria-label="一言">
+            <div class="home-hitokoto-head">
+                <span class="home-hitokoto-label">一言</span>
+                <button class="home-hitokoto-refresh" type="button" aria-label="换一句一言" title="换一句">换一句</button>
+            </div>
+            <blockquote>
+                <p id="home-hitokoto-text">{{ $fallback }}</p>
+                <cite id="home-hitokoto-source">—— {{ $source }}</cite>
+            </blockquote>
+        </section>
+
+        <section class="home-friends" aria-labelledby="home-friends-title">
+            <h3 id="home-friends-title">友情链接</h3>
+            {{- with $intro.friends }}
+            <ul class="home-friend-list">
+                {{- range . }}
+                <li>
+                    {{- if .url }}
+                    <a href="{{ .url }}" target="_blank" rel="noopener noreferrer">
+                        <span class="home-friend-name">{{ .name }}</span>
+                        {{- with .note }}<span class="home-friend-note">{{ . }}</span>{{ end }}
+                    </a>
+                    {{- else }}
+                    <span class="home-friend-static">
+                        <span class="home-friend-name">{{ .name }}</span>
+                        {{- with .note }}<span class="home-friend-note">{{ . }}</span>{{ end }}
+                    </span>
+                    {{- end }}
+                </li>
+                {{- end }}
+            </ul>
+            {{- else }}
+            <p class="home-friends-empty">友链虚位以待，欢迎交换。</p>
+            {{- end }}
+        </section>
+    </div>
+</aside>

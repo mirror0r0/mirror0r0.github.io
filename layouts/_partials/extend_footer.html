@@ -20,3 +20,27 @@
         <script defer src="{{ $js.RelPermalink }}"></script>
     {{- end }}
 {{- end }}
+
+{{- if not .IsHome }}
+    {{- with resources.Get "js/site-back.js" }}
+        {{- $js := . | resources.Minify }}
+        {{- if not site.Params.assets.disableFingerprinting }}
+            {{- $js = $js | resources.Fingerprint }}
+            <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+        {{- else }}
+            <script defer src="{{ $js.RelPermalink }}"></script>
+        {{- end }}
+    {{- end }}
+{{- end }}
+
+{{- if .IsHome }}
+    {{- with resources.Get "js/site-home.js" }}
+        {{- $js := . | resources.Minify }}
+        {{- if not site.Params.assets.disableFingerprinting }}
+            {{- $js = $js | resources.Fingerprint }}
+            <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+        {{- else }}
+            <script defer src="{{ $js.RelPermalink }}"></script>
+        {{- end }}
+    {{- end }}
+{{- end }}

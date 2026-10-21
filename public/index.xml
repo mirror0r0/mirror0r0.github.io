@@ -1,24 +1,9 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
-  <channel>
-    <title>镜子的个人网站UvU</title>
-    <link>http://localhost:1313/</link>
-    <description>Recent content on 镜子的个人网站UvU</description>
-    <generator>Hugo</generator>
-    <language>zh-cn</language>
-    <lastBuildDate>Wed, 21 Oct 2026 16:11:23 +0800</lastBuildDate>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>今天的日志，以及今天的更新UvU</title>
-      <link>http://localhost:1313/posts/my-2-post/</link>
-      <pubDate>Wed, 21 Oct 2026 16:11:23 +0800</pubDate>
-      <guid>http://localhost:1313/posts/my-2-post/</guid>
-      <description>&lt;p&gt;10-21日志：&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>镜子的个人网站UvU</title><link>https://mirror0r0.github.io/</link><description>Recent content on 镜子的个人网站UvU</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Wed, 21 Oct 2026 16:11:23 +0800</lastBuildDate><atom:link href="https://mirror0r0.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>今天的日志，以及今天的更新UvU</title><link>https://mirror0r0.github.io/posts/my-2-post/</link><pubDate>Wed, 21 Oct 2026 16:11:23 +0800</pubDate><guid>https://mirror0r0.github.io/posts/my-2-post/</guid><description>&lt;p&gt;10-21日志：&lt;/p&gt;
 &lt;p&gt;诺莫：写个播放器播放自己的ai歌曲www&lt;/p&gt;
-&lt;p&gt;空非：此次更新新增播放器和若干bug
-1.切换页面时，播放器重载
-2.因为当初使用的flac的格式，预载会比较慢，导致播放效果不佳。
-3.容器显示问题&lt;/p&gt;
+&lt;p&gt;空非：此次更新新增播放器和若干bug&lt;/p&gt;
+&lt;p&gt;1.切换页面时，播放器重载&lt;/p&gt;
+&lt;p&gt;2.因为当初使用的flac的格式，预载会比较慢，导致播放效果不佳。&lt;/p&gt;
+&lt;p&gt;3.容器显示问题&lt;/p&gt;
 &lt;p&gt;诺莫：ww。。。反正是ai写的，不管了&lt;/p&gt;
 &lt;p&gt;空非：这说明了我们没起到什么作用。&lt;/p&gt;
 &lt;p&gt;诺莫：没用就没用w，不服不做了~&lt;/p&gt;
@@ -31,38 +16,32 @@
 我写一下今天的日志。&lt;/p&gt;
 &lt;p&gt;日志：
 10-21
-8：16 吃完早餐，进行冥想。
-觉察知晓自我状态一般，与昨晚尝试纠正体态不良导致睡眠不佳有关，但确实，核心体温下降有利于睡眠，中和的一定程度的睡眠不佳，下次开风扇试试。
-体态问题主要是左侧肌肉轻微肿胀与酸痛代偿性牵引脊椎侧偏，与长期背负单肩包，导致高低肩。
-而左侧肌肉的情况源自于骨盆后倾迁移与腰椎生理曲度变直。
-而上述情况源自于下背部僵硬＋长期体态不良引起，长期不良躺姿，脚不落地和对工学椅垫高坐垫坐姿引发。
-那保证骨盆中立位坐姿应该有利于身体自我调节，不能强硬拉伸可能会导致下背部肌肉受伤。
-睡眠不佳正在考虑是否补觉，思绪较为明显的受阻。
-空非：所以还是睡一觉吧。
-normo【诺莫】记得吹风扇，冷一点睡起来舒服~
-mirror【镜子】：我没意见，好好休息。&lt;/p&gt;
-&lt;p&gt;成功建立好自己的网站了呢。
-接下来，该做什么呢
-继续更新吧，
-normo：听着很累奴&amp;hellip;
-反正也快到休息时间了，晚上玩会游戏也是被允许的哦。
-normo：好~
-接下来就完善一下吧，解决一下问题。
-嗯，flac格式还是不换了，费工夫，让网页保持预载吧。
-另外给网页加个载入动效好了。&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>网站创建的第一帖</title>
-      <link>http://localhost:1313/posts/my-first-post/</link>
-      <pubDate>Tue, 20 Oct 2026 21:52:23 +0800</pubDate>
-      <guid>http://localhost:1313/posts/my-first-post/</guid>
-      <description>&lt;p&gt;## ww~也是写好一个自己的网站了呢（confe【空非】：倒也不必如此开心，还没挂载上服务器）&lt;/p&gt;
+8：16 吃完早餐，进行冥想。&lt;/p&gt;
+&lt;p&gt;觉察知晓自我状态一般，与昨晚尝试纠正体态不良导致睡眠不佳有关，但确实，核心体温下降有利于睡眠，中和的一定程度的睡眠不佳，下次开风扇试试。&lt;/p&gt;
+&lt;p&gt;体态问题主要是左侧肌肉轻微肿胀与酸痛代偿性牵引脊椎侧偏，与长期背负单肩包，导致高低肩。&lt;/p&gt;
+&lt;p&gt;而左侧肌肉的情况源自于骨盆后倾迁移与腰椎生理曲度变直。&lt;/p&gt;
+&lt;p&gt;而上述情况源自于下背部僵硬＋长期体态不良引起，长期不良躺姿，脚不落地和对工学椅垫高坐垫坐姿引发。&lt;/p&gt;
+&lt;p&gt;那保证骨盆中立位坐姿应该有利于身体自我调节，不能强硬拉伸可能会导致下背部肌肉受伤。&lt;/p&gt;
+&lt;p&gt;睡眠不佳正在考虑是否补觉，思绪较为明显的受阻。&lt;/p&gt;
+&lt;p&gt;空非：所以还是睡一觉吧。&lt;/p&gt;
+&lt;p&gt;normo【诺莫】记得吹风扇，冷一点睡起来舒服~&lt;/p&gt;
+&lt;p&gt;mirror【镜子】：我没意见，好好休息。&lt;/p&gt;
+&lt;p&gt;成功建立好自己的网站了呢,下来，该做什么呢&lt;/p&gt;
+&lt;p&gt;继续更新吧&lt;/p&gt;
+&lt;p&gt;normo：听着很累奴&amp;hellip;&lt;/p&gt;
+&lt;p&gt;反正也快到休息时间了，晚上玩会游戏也是被允许的哦。&lt;/p&gt;
+&lt;p&gt;normo：好~&lt;/p&gt;
+&lt;p&gt;接下来就完善一下吧，解决一下问题。&lt;/p&gt;
+&lt;p&gt;嗯，flac格式还是不换了，费工夫，让网页保持预载吧。&lt;/p&gt;
+&lt;p&gt;另外给网页加个载入动效好了。&lt;/p&gt;
+&lt;p&gt;16:58-更新完毕&lt;/p&gt;
+&lt;p&gt;新增已知问题：帖子不会对单个回车进行换行处理，但是会对复数回车进行复数换行，暂不清楚怎么回事，等一下问问ai&lt;/p&gt;
+&lt;p&gt;另外，这次烧了3块钱呢，不过效果确实不错，我没意见&lt;/p&gt;
+&lt;p&gt;下次做个自动推送的小程序好了，总不能每次都终端↑吧&lt;/p&gt;
+&lt;p&gt;该休息了，今天总结：相当不错的一次尝试，即便我的能力尚缺，但是工具的力量很强大，同时记住了，善用工具，而非滥用工具，尊重工具，才能做好事情。&lt;/p&gt;</description></item><item><title>网站创建的第一帖</title><link>https://mirror0r0.github.io/posts/my-first-post/</link><pubDate>Tue, 20 Oct 2026 21:52:23 +0800</pubDate><guid>https://mirror0r0.github.io/posts/my-first-post/</guid><description>&lt;p&gt;## ww~也是写好一个自己的网站了呢（confe【空非】：倒也不必如此开心，还没挂载上服务器）&lt;/p&gt;
 &lt;p&gt;在自己的网站上，主要编写自己的ifs茶话会，生活日志，以及一些希望分享的事情。&lt;/p&gt;
 &lt;p&gt;虽然目前只是个静态网站&amp;hellip;奴~，期待有人能教我做动态网站啦~&lt;/p&gt;
 &lt;p&gt;数据库听起来就麻烦奴&amp;hellip;&lt;/p&gt;
 &lt;p&gt;交给空非吧奴~&lt;/p&gt;
 &lt;p&gt;补充一个看过的有关科普奴~：https://zhuanlan.zhihu.com/p/364647001&lt;/p&gt;
-&lt;p&gt;帖子署名：normo【诺莫】&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+&lt;p&gt;帖子署名：normo【诺莫】&lt;/p&gt;</description></item></channel></rss>

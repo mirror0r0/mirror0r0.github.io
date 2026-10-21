@@ -1,0 +1,24 @@
+{{- /*
+    将正文里的「斜杠+星号 表情名称 星号+斜杠」替换成 static/meme 下的图片。
+    Goldmark 通常会把它渲染成「斜杠+em标签+斜杠」，所以两种形式都处理。
+*/ -}}
+{{- $content := . | string -}}
+{{- $allowed := slice ".gif" ".png" ".jpg" ".jpeg" ".webp" ".svg" ".avif" -}}
+{{- range os.ReadDir "static/meme" -}}
+    {{- if not .IsDir -}}
+        {{- $ext := lower (path.Ext .Name) -}}
+        {{- if in $allowed $ext -}}
+            {{- $name := strings.TrimSuffix (path.Ext .Name) .Name -}}
+            {{- $literal := printf "/*%s*/" $name -}}
+            {{- $em := printf "/<em>%s</em>/" $name -}}
+            {{- if or (strings.Contains $content $literal) (strings.Contains $content $em) -}}
+                {{- $src := printf "meme/%s" .Name | relURL -}}
+                {{- $alt := htmlEscape $name -}}
+                {{- $img := printf `<img class="meme-inline" src="%s" alt="%s" width="400" height="400" loading="lazy" decoding="async">` $src $alt -}}
+                {{- $content = replace $content $literal $img -}}
+                {{- $content = replace $content $em $img -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+{{- $content | safeHTML -}}

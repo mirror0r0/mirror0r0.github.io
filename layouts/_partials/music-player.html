@@ -1,11 +1,12 @@
 {{- /*
     音乐播放器数据与结构
-    - deta2/Music 下的 FLAC 与 LRC 在构建时扫描；
+    - deta2/Music 下的音频（FLAC/AAC/M4A/MP3/OGG/OPUS/WAV）与 LRC 在构建时扫描；
     - 歌词按文件名去掉全角括号内容后匹配，例如「歌名（mirrorAI）.flac」→「歌名.lrc」；
     - 只有音频、没有歌词时前端显示「暂无字幕」。
 */ -}}
 {{- $musicDir := "deta2/Music" -}}
 {{- $entries := os.ReadDir $musicDir -}}
+{{- $audioExts := slice ".flac" ".aac" ".m4a" ".mp3" ".ogg" ".opus" ".wav" -}}
 {{- $lrcNames := slice -}}
 {{- range $entries -}}
     {{- if strings.HasSuffix (lower .Name) ".lrc" -}}
@@ -16,8 +17,10 @@
 {{- $lrcAliases := dict "心做匕" "心做し" -}}
 {{- $tracks := slice -}}
 {{- range $entries -}}
-    {{- if strings.HasSuffix (lower .Name) ".flac" -}}
+    {{- $ext := lower (path.Ext .Name) -}}
+    {{- if in $audioExts $ext -}}
         {{- $base := strings.TrimSuffix (path.Ext .Name) .Name -}}
+        {{- $format := strings.TrimPrefix "." $ext | upper -}}
         {{- $title := $base | replaceRE "（[^）]*）" "" | strings.TrimSpace -}}
         {{- if not $title -}}{{- $title = $base -}}{{- end -}}
         {{- $subtitle := "" -}}
@@ -39,6 +42,7 @@
             "title" $title
             "name" $base
             "subtitle" $subtitle
+            "format" $format
             "src" (printf "%s/%s" $musicDir .Name | relURL)
             "lrc" $lrcURL
         ) -}}
@@ -107,7 +111,7 @@
             </div>
             <div class="player-text">
                 <p class="player-title" id="player-title" aria-live="polite">正在载入…</p>
-                <p class="player-subtitle" id="player-subtitle">FLAC</p>
+                <p class="player-subtitle" id="player-subtitle">AUDIO</p>
             </div>
         </div>
 
