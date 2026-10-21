@@ -2,4 +2,18 @@ baseURL = 'https://mirror0r0.github.io/'
 locale = 'zh-cn'
 title = '镜子的个人网站UvU'
 theme = 'PaperMod'
+
+# 让项目根目录的 deta2（头像、音乐、歌词）成为可访问的静态资源。
+[module]
+  [[module.mounts]]
+    source = 'static'
+    target = 'static'
+  [[module.mounts]]
+    source = 'deta2'
+    target = 'static/deta2'
+
+# PaperMod 内置的标题图标：显示在站点标题左侧。
+[params.label]
+  icon = 'deta2/我的头像.jpg'
+  iconHeight = 40
  
