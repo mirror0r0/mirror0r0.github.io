@@ -59,6 +59,10 @@
     }
 
     const DEFAULT_VOLUME = 0.4;
+    const PLAYBACK_KEY = "papermod-player-playback-v1";
+    const PREFS_KEY = "papermod-player-prefs-v1";
+    const SAVE_INTERVAL = 850;
+
     let currentIndex = -1;
     let currentTrack = null;
     let lyricLines = [];
@@ -69,12 +73,98 @@
     let shuffleOn = false;
     let repeatMode = "off";
     let trackButtons = [];
+    let playerReady = false;
+    let pendingRestoreTime = 0;
+    let pendingAutoplay = false;
+    let lastPlaybackSave = 0;
+    let playbackSnapshot = null;
+    let isUnloading = false;
+    let preloadTimer = 0;
+    let preloadedSrc = "";
+    let preloadAudio = null;
+
+    const prefs = readStorage("localStorage", PREFS_KEY) || {};
+    const savedVolume = Number(prefs.volume);
 
     try {
-        audio.volume = DEFAULT_VOLUME;
-        audio.muted = false;
+        audio.preload = "auto";
+        audio.volume = Number.isFinite(savedVolume)
+            ? Math.min(1, Math.max(0, savedVolume))
+            : DEFAULT_VOLUME;
+        audio.muted = Boolean(prefs.muted);
     } catch (error) {
         // 某些移动端浏览器不允许脚本直接设置音量，保持系统音量即可。
+    }
+
+    shuffleOn = Boolean(prefs.shuffle);
+    repeatMode = ["off", "all", "one"].includes(prefs.repeat) ? prefs.repeat : "off";
+
+    function readStorage(kind, key) {
+        try {
+            const storage = window[kind];
+            const raw = storage ? storage.getItem(key) : null;
+            return raw ? JSON.parse(raw) : null;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function writeStorage(kind, key, value) {
+        try {
+            const storage = window[kind];
+
+            if (storage) {
+                storage.setItem(key, JSON.stringify(value));
+            }
+        } catch (error) {
+            // 隐私模式或存储已满时静默失败。
+        }
+    }
+
+    function savePrefs() {
+        writeStorage("localStorage", PREFS_KEY, {
+            volume: Number.isFinite(audio.volume) ? audio.volume : DEFAULT_VOLUME,
+            muted: audio.muted,
+            shuffle: shuffleOn,
+            repeat: repeatMode
+        });
+    }
+
+    function capturePlayback() {
+        if (!currentTrack) {
+            return null;
+        }
+
+        playbackSnapshot = {
+            src: currentTrack.src,
+            time: audio.ended || !Number.isFinite(audio.currentTime) ? 0 : audio.currentTime,
+            playing: !audio.paused && !audio.ended
+        };
+
+        return playbackSnapshot;
+    }
+
+    function savePlayback(force, fromSnapshot) {
+        if (!playerReady || !currentTrack) {
+            return;
+        }
+
+        const now = Date.now();
+
+        if (!force && now - lastPlaybackSave < SAVE_INTERVAL) {
+            return;
+        }
+
+        const snapshot = fromSnapshot && playbackSnapshot
+            ? playbackSnapshot
+            : capturePlayback();
+
+        if (!snapshot) {
+            return;
+        }
+
+        lastPlaybackSave = now;
+        writeStorage("sessionStorage", PLAYBACK_KEY, snapshot);
     }
 
     function setStatus(message) {
@@ -273,16 +363,39 @@
         setLyric(lyricLines[index].text, next, false);
     }
 
+    function getBufferedEnd() {
+        if (!audio.buffered || audio.buffered.length === 0) {
+            return 0;
+        }
+
+        let end = 0;
+
+        for (let i = 0; i < audio.buffered.length; i += 1) {
+            end = Math.max(end, audio.buffered.end(i));
+        }
+
+        return end;
+    }
+
     function updateProgress(force) {
         const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
         const current = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
         const percent = duration > 0 ? (current / duration) * 100 : 0;
+        const bufferedEnd = getBufferedEnd();
+        const bufferPercent = duration > 0
+            ? Math.min(100, (bufferedEnd / duration) * 100)
+            : 0;
 
         if (force || !seeking) {
             ui.seek.value = String(Math.round(percent * 10));
         }
 
         setRangeFill(ui.seek, percent);
+        ui.seek.style.setProperty(
+            "--buffer-progress",
+            `${Math.max(percent, bufferPercent)}%`
+        );
+        ui.seek.title = `已预载 ${Math.round(bufferPercent)}%`;
         ui.currentTime.textContent = formatTime(current);
         ui.duration.textContent = formatTime(duration);
         ui.seek.setAttribute("aria-valuetext", `${formatTime(current)} / ${formatTime(duration)}`);
@@ -351,6 +464,13 @@
                     return;
                 }
 
+                if (error && error.name === "NotAllowedError") {
+                    setStatus("浏览器阻止了自动播放，点击播放按钮继续。");
+                    updatePlayButton(false);
+                    savePlayback(true);
+                    return;
+                }
+
                 showPlaybackError();
             });
         }
@@ -386,14 +506,24 @@
         });
     }
 
-    function loadTrack(index, autoplay) {
+    function loadTrack(index, autoplay, restore) {
         if (!tracks[index]) {
             return;
         }
 
         currentIndex = index;
         currentTrack = tracks[index];
+        playbackSnapshot = {
+            src: currentTrack.src,
+            time: 0,
+            playing: false
+        };
+        pendingRestoreTime = restore && Number.isFinite(Number(restore.time))
+            ? Math.max(0, Number(restore.time))
+            : 0;
+        pendingAutoplay = Boolean(restore && restore.playing);
 
+        window.clearTimeout(preloadTimer);
         audio.pause();
         audio.src = currentTrack.src;
         audio.load();
@@ -404,9 +534,10 @@
 
         ui.seek.value = "0";
         setRangeFill(ui.seek, 0);
+        ui.seek.style.setProperty("--buffer-progress", "0%");
         ui.currentTime.textContent = "0:00";
         ui.duration.textContent = "0:00";
-        setStatus("");
+        setStatus(pendingAutoplay ? "正在恢复上次播放…" : "");
 
         updateTrackListActive();
         loadLyrics(currentTrack);
@@ -415,6 +546,69 @@
         if (autoplay) {
             playAudio();
         }
+
+        if (playerReady) {
+            savePlayback(true);
+        }
+    }
+
+    function canPreloadNext() {
+        const connection = navigator.connection;
+
+        if (!connection) {
+            return true;
+        }
+
+        if (connection.saveData) {
+            return false;
+        }
+
+        return !/(^|-)(2g|3g)$/.test(connection.effectiveType || "");
+    }
+
+    function preloadNextTrack() {
+        if (!playerReady || !currentTrack || tracks.length < 2 || !canPreloadNext()) {
+            return;
+        }
+
+        const next = tracks[getNextIndex()];
+
+        if (!next || !next.src || next.src === currentTrack.src) {
+            return;
+        }
+
+        if (!preloadAudio) {
+            preloadAudio = new Audio();
+            preloadAudio.preload = "auto";
+            preloadAudio.muted = true;
+            preloadAudio.volume = 0;
+            preloadAudio.hidden = true;
+            preloadAudio.setAttribute("aria-hidden", "true");
+
+            if (document.body) {
+                document.body.appendChild(preloadAudio);
+            }
+        }
+
+        if (preloadedSrc !== next.src) {
+            preloadedSrc = next.src;
+
+            try {
+                preloadAudio.src = next.src;
+                preloadAudio.load();
+            } catch (error) {
+                preloadedSrc = "";
+            }
+        }
+
+        if (next.lrc) {
+            fetch(next.lrc, { cache: "force-cache" }).catch(() => {});
+        }
+    }
+
+    function schedulePreloadNext() {
+        window.clearTimeout(preloadTimer);
+        preloadTimer = window.setTimeout(preloadNextTrack, 1800);
     }
 
     function getNextIndex() {
@@ -461,6 +655,7 @@
 
         updatePlayButton(false);
         updateProgress(true);
+        savePlayback(true);
     }
 
     function updateRepeatUI() {
@@ -483,14 +678,24 @@
     function cycleRepeat() {
         repeatMode = repeatMode === "off" ? "all" : repeatMode === "all" ? "one" : "off";
         updateRepeatUI();
+        savePrefs();
     }
 
-    function toggleShuffle() {
-        shuffleOn = !shuffleOn;
+    function updateShuffleUI() {
         ui.shuffle.classList.toggle("is-active", shuffleOn);
         ui.shuffle.setAttribute("aria-pressed", shuffleOn ? "true" : "false");
         ui.shuffle.title = shuffleOn ? "随机播放：开" : "随机播放：关";
         ui.shuffle.setAttribute("aria-label", shuffleOn ? "随机播放：开" : "随机播放：关");
+    }
+
+    function toggleShuffle() {
+        shuffleOn = !shuffleOn;
+        updateShuffleUI();
+        savePrefs();
+
+        if (shuffleOn && !audio.paused) {
+            schedulePreloadNext();
+        }
     }
 
     function setPlaylistOpen(open) {
@@ -638,12 +843,14 @@
     ui.mute.addEventListener("click", () => {
         audio.muted = !audio.muted;
         updateVolumeUI();
+        savePrefs();
     });
 
     ui.volume.addEventListener("input", () => {
         audio.muted = false;
         audio.volume = Number(ui.volume.value) / 100;
         updateVolumeUI();
+        savePrefs();
     });
 
     ui.seek.addEventListener("pointerdown", () => {
@@ -709,29 +916,89 @@
     });
 
     audio.addEventListener("play", () => {
+        setStatus("");
         updatePlayButton(true);
         updateLyrics(true);
+        schedulePreloadNext();
+        capturePlayback();
+        savePlayback(true);
     });
 
     audio.addEventListener("pause", () => {
         updatePlayButton(false);
+
+        // 页面跳转时浏览器可能会先重置媒体，再触发 pause；此时保留最后一次有效快照。
+        if (
+            !isUnloading &&
+            audio.currentTime <= 0.05 &&
+            playbackSnapshot &&
+            playbackSnapshot.src === (currentTrack && currentTrack.src) &&
+            playbackSnapshot.time > 1
+        ) {
+            return;
+        }
+
+        capturePlayback();
+        savePlayback(true);
     });
 
     audio.addEventListener("timeupdate", () => {
         updateLyrics(false);
         updateProgress(false);
+        capturePlayback();
+        savePlayback(false);
+    });
+
+    audio.addEventListener("progress", () => {
+        updateProgress(false);
     });
 
     audio.addEventListener("loadedmetadata", () => {
+        const shouldResume = pendingAutoplay;
+
+        if (pendingRestoreTime > 0) {
+            const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+            const target = duration > 0
+                ? Math.min(pendingRestoreTime, Math.max(0, duration - 0.25))
+                : pendingRestoreTime;
+
+            try {
+                audio.currentTime = target;
+            } catch (error) {
+                // 如果这个浏览器暂时不接受 seek，保留从 0 开始。
+            }
+        }
+
+        pendingRestoreTime = 0;
+        pendingAutoplay = false;
+        playerReady = true;
+
         updateProgress(true);
         updateLyrics(true);
+        capturePlayback();
+
+        if (shouldResume) {
+            playAudio();
+        }
+
+        savePlayback(true);
     });
 
     audio.addEventListener("durationchange", () => {
         updateProgress(true);
     });
 
-    audio.addEventListener("volumechange", updateVolumeUI);
+    audio.addEventListener("seeked", () => {
+        updateProgress(true);
+        updateLyrics(true);
+        capturePlayback();
+        savePlayback(true);
+    });
+
+    audio.addEventListener("volumechange", () => {
+        updateVolumeUI();
+        savePrefs();
+    });
 
     audio.addEventListener("ended", handleEnded);
 
@@ -739,11 +1006,48 @@
         showPlaybackError();
     });
 
+    window.addEventListener("pagehide", () => {
+        isUnloading = true;
+        savePlayback(true, true);
+    });
+
+    window.addEventListener("beforeunload", () => {
+        isUnloading = true;
+        savePlayback(true, true);
+    });
+
+    window.addEventListener("pageshow", () => {
+        isUnloading = false;
+    });
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+            savePlayback(true, true);
+        }
+    });
+
+    const savedPlayback = readStorage("sessionStorage", PLAYBACK_KEY);
+    let startIndex = 0;
+    let restoreState = null;
+
+    if (savedPlayback && typeof savedPlayback.src === "string") {
+        const savedIndex = tracks.findIndex((track) => track.src === savedPlayback.src);
+
+        if (savedIndex >= 0) {
+            startIndex = savedIndex;
+            restoreState = {
+                time: Number(savedPlayback.time) || 0,
+                playing: Boolean(savedPlayback.playing)
+            };
+        }
+    }
+
     buildTrackList();
     updateVolumeUI();
+    updateShuffleUI();
     updateRepeatUI();
     setupMediaSession();
-    loadTrack(0, false);
+    loadTrack(startIndex, false, restoreState);
     syncPlayerSpace();
 
     if (window.ResizeObserver) {
