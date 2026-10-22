@@ -311,6 +311,85 @@
         return { start, stop };
     }
 
+    function setupPanelSwipe(menu) {
+        const panel = menu.querySelector("[data-mini-menu-panel]");
+
+        if (!panel) {
+            return;
+        }
+
+        let startX = 0;
+        let startY = 0;
+        let pointerId = null;
+        let dragging = false;
+
+        function reset() {
+            panel.classList.remove("is-dragging");
+            panel.style.removeProperty("transform");
+            pointerId = null;
+            startX = 0;
+            startY = 0;
+            dragging = false;
+        }
+
+        panel.addEventListener("pointerdown", (event) => {
+            if (!mobileQuery.matches || !menu.classList.contains("is-open")) {
+                return;
+            }
+
+            if (event.target.closest("a, button, input, textarea, select")) {
+                return;
+            }
+
+            startX = event.clientX;
+            startY = event.clientY;
+            pointerId = event.pointerId;
+            dragging = false;
+            panel.setPointerCapture?.(pointerId);
+        }, { passive: true });
+
+        panel.addEventListener("pointermove", (event) => {
+            if (pointerId === null || event.pointerId !== pointerId) {
+                return;
+            }
+
+            const dx = event.clientX - startX;
+            const dy = event.clientY - startY;
+
+            if (!dragging && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
+                dragging = true;
+                panel.classList.add("is-dragging");
+            }
+
+            if (!dragging) {
+                return;
+            }
+
+            if (event.cancelable) {
+                event.preventDefault();
+            }
+
+            panel.style.transform = `translateX(${(dx * 0.32).toFixed(2)}px)`;
+        }, { passive: false });
+
+        panel.addEventListener("pointerup", (event) => {
+            if (pointerId === null || event.pointerId !== pointerId) {
+                return;
+            }
+
+            const dx = event.clientX - startX;
+            const shouldClose = dragging && Math.abs(dx) > 100;
+
+            reset();
+
+            if (shouldClose) {
+                closeMenu(menu, false);
+            }
+        });
+
+        panel.addEventListener("pointercancel", reset);
+    }
+
     menus.forEach((menu) => {
         const toggle = menu.querySelector("[data-mini-menu-toggle]");
 
@@ -323,6 +402,8 @@
         if (arrow) {
             arrowAnimations.set(menu, arrow);
         }
+
+        setupPanelSwipe(menu);
 
         toggle.addEventListener("click", () => {
             if (menu.classList.contains("is-open")) {

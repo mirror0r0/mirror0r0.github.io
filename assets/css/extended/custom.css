@@ -1647,11 +1647,19 @@ details.toc {
 }
 
 .mini-menu-dots {
-    font-size: 13px;
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
     line-height: 1;
-    letter-spacing: 1px;
-    transform: translateY(-2px);
+}
+
+.mini-menu-dots svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
 }
 
 .mini-menu-arrow {
@@ -2012,6 +2020,10 @@ body.mini-menu-open .main {
     z-index: auto;
 }
 
+.mini-menu-panel.is-dragging {
+    transition: none !important;
+}
+
 @media (max-width: 899px) {
     .mini-menu.is-open .mini-menu-panel {
         left: 12px !important;
@@ -2020,21 +2032,15 @@ body.mini-menu-open .main {
         width: auto !important;
         height: calc(100dvh - 24px);
         max-height: none;
-        padding: 96px 18px 22px;
+        padding: 32px 18px 22px;
         border-radius: 22px;
+        touch-action: pan-y;
         transform: none;
     }
 
+    /* 手机端不再使用面板里的返回按钮，改为横向滑动关闭。 */
     .mini-menu.is-open .mini-menu-toggle {
-        position: fixed;
-        top: 14px;
-        z-index: 1200;
-        background: var(--entry);
-        border-color: rgba(138, 174, 189, 0.46);
-        box-shadow:
-            inset 0 0 18px rgba(255, 255, 255, 0.12),
-            0 0 26px rgba(138, 174, 189, 0.34),
-            0 10px 24px -14px rgba(0, 0, 0, 0.65);
+        display: none;
     }
 
     .mini-menu[data-side="right"].is-open .mini-menu-toggle {
@@ -2065,6 +2071,11 @@ body.mini-menu-open .main {
     .mini-menu-personal .mini-menu-toggle {
         width: 64px;
         height: 64px;
+    }
+
+    .mini-menu-personal .mini-menu-dots {
+        width: 20px;
+        height: 20px;
     }
 
     .mini-friend-thumb {
@@ -2107,8 +2118,8 @@ body.mini-menu-open .main {
     }
 
     .mini-menu-personal .mini-menu-dots {
-        font-size: 18px;
-        transform: translateY(-3px);
+        width: 20px;
+        height: 20px;
     }
 
     .mini-menu-personal .mini-menu-arrow {
@@ -2163,7 +2174,8 @@ body.mini-menu-open .main {
     }
 
     .mini-menu-personal .mini-menu-dots {
-        font-size: 16px;
+        width: 18px;
+        height: 18px;
     }
 }
 
