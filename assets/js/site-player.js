@@ -951,7 +951,7 @@
 
     buildVisualizer();
 
-    const visualizerQuery = window.matchMedia("(min-width: 900px)");
+    const visualizerQuery = window.matchMedia("(min-width: 0px)");
     let audioContext = null;
     let visualizerAnalyser = null;
     let visualizerData = null;
@@ -1018,7 +1018,8 @@
 
             const average = sum / Math.max(1, end - start);
             const level = Math.pow(average / 255, 1.35);
-            dot.style.bottom = `${6 + level * 82}px`;
+            const maxBottom = Math.max(24, (visualizer?.clientHeight || 96) - 12);
+            dot.style.bottom = `${6 + level * (maxBottom - 6)}px`;
             dot.style.opacity = String(0.22 + level * 0.75);
         });
     }

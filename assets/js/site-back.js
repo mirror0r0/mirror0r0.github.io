@@ -33,7 +33,7 @@
 
     const canvas = button.querySelector(".back-orbit-canvas");
     const ctx = canvas && canvas.getContext("2d");
-    const SIZE = 44;
+    const SIZE = 40;
     const CENTER = SIZE / 2;
     const NEAR_DISTANCE = 120;
     const LIT_DISTANCE = 52;
