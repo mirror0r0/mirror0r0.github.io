@@ -15,8 +15,10 @@
     }
     window.__papermodTideParticles = true;
 
-    const SPACING = 20;
-    const ROW_HEIGHT = SPACING * 0.8660254037844386; // sqrt(3) / 2
+    const DESKTOP_SPACING = 20;
+    const COMPACT_SPACING = 40;
+    let spacing = DESKTOP_SPACING;
+    let rowHeight = spacing * 0.8660254037844386; // sqrt(3) / 2
     const LINK_RADIUS = 165;
     const LINK_RADIUS_SQ = LINK_RADIUS * LINK_RADIUS;
 
@@ -60,6 +62,13 @@
 
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     let motionEnabled = !motionQuery.matches;
+    let compact = window.innerWidth <= 899;
+
+    const touch = {
+        x: 0,
+        y: 0,
+        active: false
+    };
 
     let width = 0;
     let height = 0;
@@ -69,6 +78,12 @@
     let lastFrame = 0;
     let frameCount = 0;
     let resizeTimer = 0;
+    let compactRaf = 0;
+    let lineCanvas = null;
+    let lineCtx = null;
+    let fxCanvas = null;
+    let fxCtx = null;
+    let maskCanvas = null;
 
     let colors = {
         dot: "rgba(138, 174, 189, 0.34)",
@@ -92,16 +107,18 @@
     }
 
     function buildParticles() {
-        const cols = Math.ceil(width / SPACING) + 2;
-        const rows = Math.ceil(height / ROW_HEIGHT) + 2;
+        const cols = Math.ceil(width / spacing) + 2;
+        const rows = Math.ceil(height / rowHeight) + 2;
+        const radiusBase = compact ? 1.1 : 0.85;
+        const radiusRange = compact ? 0.9 : 0.7;
         particles = [];
 
         for (let row = -1; row <= rows; row += 1) {
-            const offset = (row & 1) ? SPACING * 0.5 : 0;
-            const y = row * ROW_HEIGHT;
+            const offset = (row & 1) ? spacing * 0.5 : 0;
+            const y = row * rowHeight;
 
             for (let col = -1; col <= cols; col += 1) {
-                const x = col * SPACING + offset;
+                const x = col * spacing + offset;
                 const seed = hash(row, col);
 
                 particles.push({
@@ -111,7 +128,7 @@
                     y,
                     vx: 0,
                     vy: 0,
-                    r: 0.85 + seed * 0.7,
+                    r: radiusBase + seed * radiusRange,
                     swap: null,
                     cooldown: 0
                 });
@@ -119,10 +136,98 @@
         }
     }
 
+    function buildLineLayer() {
+        if (!compact) {
+            lineCanvas = null;
+            lineCtx = null;
+            return;
+        }
+
+        if (!lineCanvas) {
+            lineCanvas = document.createElement("canvas");
+            lineCtx = lineCanvas.getContext("2d");
+        }
+
+        if (!lineCtx) {
+            return;
+        }
+
+        lineCanvas.width = canvas.width;
+        lineCanvas.height = canvas.height;
+        lineCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        lineCtx.clearRect(0, 0, width, height);
+        lineCtx.strokeStyle = colors.active;
+        lineCtx.lineWidth = 0.8;
+        lineCtx.globalAlpha = 0.34;
+
+        const maxDistance = spacing * 1.28;
+        const maxDistanceSq = maxDistance * maxDistance;
+
+        for (let i = 0; i < particles.length; i += 1) {
+            const first = particles[i];
+
+            for (let j = i + 1; j < particles.length; j += 1) {
+                const second = particles[j];
+                const dx = second.x - first.x;
+                const dy = second.y - first.y;
+
+                if (dx * dx + dy * dy > maxDistanceSq) {
+                    continue;
+                }
+
+                lineCtx.beginPath();
+                lineCtx.moveTo(first.x, first.y);
+                lineCtx.lineTo(second.x, second.y);
+                lineCtx.stroke();
+            }
+        }
+
+        lineCtx.globalAlpha = 1;
+
+        const size = 340;
+
+        if (!fxCanvas) {
+            fxCanvas = document.createElement("canvas");
+            fxCtx = fxCanvas.getContext("2d");
+        }
+
+        fxCanvas.width = Math.round(size * dpr);
+        fxCanvas.height = Math.round(size * dpr);
+
+        if (!maskCanvas) {
+            maskCanvas = document.createElement("canvas");
+        }
+
+        maskCanvas.width = Math.round(size * dpr);
+        maskCanvas.height = Math.round(size * dpr);
+
+        const maskCtx = maskCanvas.getContext("2d");
+
+        if (!maskCtx) {
+            return;
+        }
+
+        maskCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        maskCtx.clearRect(0, 0, size, size);
+
+        const gradient = maskCtx.createRadialGradient(
+            size / 2, size / 2, 8,
+            size / 2, size / 2, size / 2
+        );
+        gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
+        gradient.addColorStop(0.42, "rgba(255, 255, 255, 0.72)");
+        gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+        maskCtx.fillStyle = gradient;
+        maskCtx.fillRect(0, 0, size, size);
+    }
+
     function resizeCanvas() {
         width = Math.max(1, window.innerWidth);
         height = Math.max(1, window.innerHeight);
         dpr = Math.min(window.devicePixelRatio || 1, 2);
+        compact = width <= 899;
+        spacing = compact ? COMPACT_SPACING : DESKTOP_SPACING;
+        rowHeight = spacing * 0.8660254037844386;
 
         canvas.width = Math.round(width * dpr);
         canvas.height = Math.round(height * dpr);
@@ -132,8 +237,20 @@
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         buildParticles();
         readPalette();
-        draw(performance.now());
+        buildLineLayer();
+        resetAll();
+
+        if (raf) {
+            window.cancelAnimationFrame(raf);
+            raf = 0;
+        }
+
+        draw();
         html.classList.add("particles-ready");
+
+        if (!compact) {
+            ensureLoop();
+        }
     }
 
     function resetParticle(particle) {
@@ -408,10 +525,55 @@
         ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
     }
 
+    function drawTouchLines() {
+        if (!compact || !touch.active || !lineCanvas || !fxCanvas || !fxCtx || !maskCanvas) {
+            return;
+        }
+
+        const size = 340;
+        const half = size / 2;
+        const sx = Math.min(Math.max(0, touch.x - half), Math.max(0, width - size));
+        const sy = Math.min(Math.max(0, touch.y - half), Math.max(0, height - size));
+        const sourceX = Math.round(sx * dpr);
+        const sourceY = Math.round(sy * dpr);
+        const sourceSize = Math.round(size * dpr);
+
+        fxCtx.setTransform(1, 0, 0, 1, 0, 0);
+        fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+        fxCtx.drawImage(
+            lineCanvas,
+            sourceX,
+            sourceY,
+            sourceSize,
+            sourceSize,
+            0,
+            0,
+            sourceSize,
+            sourceSize
+        );
+        fxCtx.globalCompositeOperation = "destination-in";
+        fxCtx.drawImage(maskCanvas, 0, 0);
+        fxCtx.globalCompositeOperation = "source-over";
+
+        ctx.drawImage(fxCanvas, sx, sy, size, size);
+    }
+
     function draw() {
         ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = colors.dot;
+
+        for (let i = 0; i < particles.length; i += 1) {
+            const particle = particles[i];
+            drawDot(particle.x, particle.y, particle.r);
+        }
+
+        if (compact) {
+            drawTouchLines();
+            return;
+        }
 
         const active = [];
+
         ctx.fillStyle = colors.dot;
 
         for (let i = 0; i < particles.length; i += 1) {
@@ -425,11 +587,8 @@
                 if (distanceSq < LINK_RADIUS_SQ) {
                     const strength = Math.pow(1 - Math.sqrt(distanceSq) / LINK_RADIUS, 1.35);
                     active.push({ particle, strength });
-                    continue;
                 }
             }
-
-            drawDot(particle.x, particle.y, particle.r);
         }
 
         if (active.length > 0) {
@@ -457,10 +616,21 @@
         }
     }
 
+    function drawCompact() {
+        if (!compact || compactRaf) {
+            return;
+        }
+
+        compactRaf = window.requestAnimationFrame(() => {
+            compactRaf = 0;
+            draw();
+        });
+    }
+
     function tick(now) {
         raf = 0;
 
-        if (!motionEnabled || document.hidden) {
+        if (!motionEnabled || document.hidden || compact) {
             return;
         }
 
@@ -484,7 +654,7 @@
     }
 
     function ensureLoop() {
-        if (!motionEnabled || document.hidden) {
+        if (!motionEnabled || document.hidden || compact) {
             return;
         }
 
@@ -499,6 +669,11 @@
             return;
         }
 
+        if (compact) {
+            drawCompact();
+            return;
+        }
+
         ensureLoop();
     }
 
@@ -506,11 +681,24 @@
         mouse.active = false;
         mouse.left = false;
         mouse.right = false;
+        touch.active = false;
         wake();
     }
 
     function onPointerMove(event) {
-        if (!motionEnabled || event.pointerType === "touch") {
+        if (!motionEnabled) {
+            return;
+        }
+
+        if (compact) {
+            touch.x = event.clientX;
+            touch.y = event.clientY;
+            touch.active = true;
+            wake();
+            return;
+        }
+
+        if (event.pointerType === "touch") {
             return;
         }
 
@@ -528,6 +716,14 @@
 
     function onPointerDown(event) {
         if (!motionEnabled) {
+            return;
+        }
+
+        if (compact) {
+            touch.x = event.clientX;
+            touch.y = event.clientY;
+            touch.active = true;
+            wake();
             return;
         }
 
@@ -554,6 +750,12 @@
     }
 
     function onPointerUp(event) {
+        if (compact) {
+            touch.active = false;
+            wake();
+            return;
+        }
+
         if (event.pointerType === "touch") {
             deactivate();
             return;
@@ -568,6 +770,14 @@
     }
 
     function onPointerOut(event) {
+        if (compact) {
+            if (!event.relatedTarget) {
+                touch.active = false;
+                wake();
+            }
+            return;
+        }
+
         if (event.pointerType !== "touch" && !event.relatedTarget) {
             deactivate();
         }
@@ -622,6 +832,11 @@
     // 切换 PaperMod 的明暗主题时，重新读取粒子颜色。
     new MutationObserver(() => {
         readPalette();
+
+        if (compact) {
+            buildLineLayer();
+        }
+
         if (!raf) {
             draw();
         }

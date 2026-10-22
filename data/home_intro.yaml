@@ -1,9 +1,9 @@
 # 首页简介卡片内容
-# 修改这里的文字、签名、一言兜底和友情链接即可。
+# 修改这里的文字、签名、一言兜底、友链和个人链接即可。
 title: "关于这里"
 eyebrow: "ABOUT THIS SITE"
 description: |
-  这里是镜子的个人小站，记录日常、iF 茶话会、生活日志，
+  这里是镜子的小窝，记录日常、iFS茶话会、生活日志，
   以及一些想分享给路过的人的小东西。
 signature: "—— 镜子"
 
@@ -11,9 +11,22 @@ hitokoto:
   fallback: "愿每一个路过这里的人，都能带走一点好心情。"
   source: "本站"
 
-# 友情链接示例：
-# friends:
-#   - name: "朋友的名字"
-#     url: "https://example.com"
-#     note: "朋友的网站"
-friends: []
+# 友情链接：首页只展示前两个，点右侧按钮查看全部。
+friends:
+  - name: 着火的冰块nya 的小家
+    url: https://zhdbk3.github.io/
+    avatar: https://avatars.githubusercontent.com/u/161030746
+    note: 我们终将在没有黑暗的地方相见
+
+# 左侧“···”菜单里的个人链接与更多简介。
+personal_links:
+  - name: "GitHub"
+    url: "https://github.com/mirror0r0"
+    note: "代码与项目"
+  # - name: "视频网站"
+  #   url: "https://你的视频主页"
+  #   note: "我的视频"
+
+more_about: |
+  这里是镜子的个人小站。
+  除了日志，也会慢慢放一些自己喜欢的东西。
