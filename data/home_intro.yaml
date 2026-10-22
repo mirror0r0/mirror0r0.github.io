@@ -18,15 +18,24 @@ friends:
     avatar: https://avatars.githubusercontent.com/u/161030746
     note: 我们终将在没有黑暗的地方相见
 
+  - name: ETT Blog｜星源之家
+    url: https://blog.20100205.xyz
+    avatar: "/deta2/ETT%20Blog.png"
+    note: 硬核折腾闲聊室，Android厂商适配/自建服务器/AI Bot从踩坑到通关
+
+  - name: 橘子的github
+    url: https://github.com/ILearnedSomeCoding/preclib
+    avatar: https://avatars.githubusercontent.com/u/293298697?s=400&u=309049a157a61233601c7664e8c07884345a241f&v=4
+    note: 等我问问橘子
 # 左侧“···”菜单里的个人链接与更多简介。
 personal_links:
-  - name: "GitHub"
+  - name: "镜子的GitHub主页"
     url: "https://github.com/mirror0r0"
-    note: "代码与项目"
-  # - name: "视频网站"
-  #   url: "https://你的视频主页"
-  #   note: "我的视频"
+    note: "镜子的代码与项目（虽然可能没东西）"
 
+  - name: "镜子的B站"
+    url: "https://space.bilibili.com/518831561?spm_id_from=333.788.0.0"
+    note: "可能都是黑历史（不用可能）"
 more_about: |
   这里是镜子的个人小站。
   除了日志，也会慢慢放一些自己喜欢的东西。
