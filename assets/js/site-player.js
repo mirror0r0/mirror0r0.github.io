@@ -920,44 +920,53 @@
 
     // 桌面端：每 0.5 秒采样一次频谱，用与背景一致的小粒子高度表示音量。
     const visualizer = document.querySelector(".player-visualizer");
-    const visualizerColumns = [];
-    const VISUALIZER_COLUMNS = 48;
-    const VISUALIZER_ROWS = 6;
+    const visualizerDots = [];
+    const VISUALIZER_STEP = 20;
 
-    if (visualizer) {
-        for (let columnIndex = 0; columnIndex < VISUALIZER_COLUMNS; columnIndex += 1) {
-            const column = document.createElement("span");
-            const dots = [];
-            column.className = "player-viz-col";
-
-            for (let rowIndex = 0; rowIndex < VISUALIZER_ROWS; rowIndex += 1) {
-                const dot = document.createElement("b");
-                column.appendChild(dot);
-                dots.push(dot);
-            }
-
-            visualizer.appendChild(column);
-            visualizerColumns.push(dots);
+    function buildVisualizer() {
+        if (!visualizer) {
+            return;
         }
+
+        const styles = getComputedStyle(visualizer);
+        const available = visualizer.clientWidth
+            - (parseFloat(styles.paddingLeft) || 0)
+            - (parseFloat(styles.paddingRight) || 0);
+        const count = Math.max(1, Math.floor(available / VISUALIZER_STEP));
+
+        visualizer.replaceChildren();
+        visualizerDots.length = 0;
+
+        for (let columnIndex = 0; columnIndex < count; columnIndex += 1) {
+            const column = document.createElement("span");
+            const dot = document.createElement("b");
+            column.className = "player-viz-col";
+            column.appendChild(dot);
+            visualizer.appendChild(column);
+            visualizerDots.push(dot);
+        }
+
+        resetVisualizer();
     }
+
+    buildVisualizer();
 
     const visualizerQuery = window.matchMedia("(min-width: 900px)");
     let audioContext = null;
     let visualizerAnalyser = null;
     let visualizerData = null;
     let visualizerTimer = 0;
+    let visualizerResizeTimer = 0;
 
     function resetVisualizer() {
-        visualizerColumns.forEach((dots) => {
-            dots.forEach((dot) => {
-                dot.style.opacity = "0.04";
-                dot.style.transform = "scale(0.6)";
-            });
+        visualizerDots.forEach((dot) => {
+            dot.style.bottom = "6px";
+            dot.style.opacity = "0.18";
         });
     }
 
     function createVisualizer() {
-        if (audioContext || !visualizerColumns.length || !visualizerQuery.matches || !audio) {
+        if (audioContext || !visualizerDots.length || !visualizerQuery.matches || !audio) {
             return;
         }
 
@@ -995,10 +1004,10 @@
 
         visualizerAnalyser.getByteFrequencyData(visualizerData);
 
-        const totalColumns = visualizerColumns.length;
+        const totalColumns = visualizerDots.length;
         const binCount = visualizerData.length;
 
-        visualizerColumns.forEach((dots, columnIndex) => {
+        visualizerDots.forEach((dot, columnIndex) => {
             const start = Math.floor((columnIndex / totalColumns) * binCount);
             const end = Math.max(start + 1, Math.floor(((columnIndex + 1) / totalColumns) * binCount));
             let sum = 0;
@@ -1009,13 +1018,8 @@
 
             const average = sum / Math.max(1, end - start);
             const level = Math.pow(average / 255, 1.35);
-            const visibleRows = level * VISUALIZER_ROWS;
-
-            dots.forEach((dot, rowIndex) => {
-                const fill = Math.max(0, Math.min(1, visibleRows - rowIndex));
-                dot.style.opacity = fill > 0 ? String(0.16 + fill * 0.84) : "0.03";
-                dot.style.transform = `scale(${fill > 0 ? 1 : 0.6})`;
-            });
+            dot.style.bottom = `${6 + level * 82}px`;
+            dot.style.opacity = String(0.22 + level * 0.75);
         });
     }
 
@@ -1070,6 +1074,17 @@
         } else {
             stopVisualizer();
         }
+    });
+
+    window.addEventListener("resize", () => {
+        window.clearTimeout(visualizerResizeTimer);
+        visualizerResizeTimer = window.setTimeout(() => {
+            buildVisualizer();
+
+            if (!audio.paused && visualizerAnalyser) {
+                drawVisualizer();
+            }
+        }, 160);
     });
 
     resetVisualizer();

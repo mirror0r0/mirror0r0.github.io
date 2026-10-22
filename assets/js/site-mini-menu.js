@@ -190,9 +190,13 @@
         function draw() {
             const width = canvas.width / Math.min(window.devicePixelRatio || 1, 2);
             const height = canvas.height / Math.min(window.devicePixelRatio || 1, 2);
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = getComputedStyle(document.documentElement)
+            const color = getComputedStyle(document.documentElement)
                 .getPropertyValue("--particle-active").trim() || getComputedStyle(toggle).color;
+
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = color;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = Math.max(2, width * 0.08);
 
             particles.forEach((particle) => {
                 ctx.fillRect(
@@ -202,6 +206,8 @@
                     particle.r * 2
                 );
             });
+
+            ctx.shadowBlur = 0;
         }
 
         function start() {
@@ -225,6 +231,9 @@
             const headX = width * 0.52;
             const centerY = height * 0.5;
             const spread = height * 0.23;
+            const direction = toggle.closest("[data-mini-menu]")?.dataset.arrow === "right"
+                ? "right"
+                : "left";
             const targets = [];
 
             for (let index = 0; index < 10; index += 1) {
@@ -250,14 +259,19 @@
                 });
             }
 
+            const jitter = Math.max(0.8, width * 0.035);
+
             const baseRadius = Math.max(0.8, width * 0.018);
-            particles = targets.map((target) => ({
-                x: width * 0.5 + (Math.random() - 0.5) * width * 0.82,
-                y: height * 0.5 + (Math.random() - 0.5) * height * 0.82,
-                tx: target.x,
-                ty: target.y,
-                r: baseRadius + Math.random() * baseRadius * 0.8
-            }));
+            particles = targets.map((target) => {
+                const x = direction === "right" ? width - target.x : target.x;
+                return {
+                    x: width * 0.5 + (Math.random() - 0.5) * width * 0.82,
+                    y: height * 0.5 + (Math.random() - 0.5) * height * 0.82,
+                    tx: x + (Math.random() - 0.5) * jitter,
+                    ty: target.y + (Math.random() - 0.5) * jitter,
+                    r: baseRadius + Math.random() * baseRadius * 0.8
+                };
+            });
 
             const started = performance.now();
 

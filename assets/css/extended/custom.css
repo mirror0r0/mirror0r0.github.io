@@ -1609,6 +1609,24 @@ details.toc {
         0 0 20px rgba(138, 174, 189, 0.24);
 }
 
+/* 打开后的返回按钮与子页面返回按钮同样发光。 */
+.mini-menu.is-open .mini-menu-toggle {
+    color: var(--link-strong);
+    background: rgba(168, 197, 209, 0.24);
+    border-color: rgba(138, 174, 189, 0.62);
+    box-shadow:
+        inset 0 0 18px rgba(255, 255, 255, 0.22),
+        0 0 26px rgba(138, 174, 189, 0.34);
+}
+
+:root[data-theme="dark"] .mini-menu.is-open .mini-menu-toggle {
+    background: rgba(168, 197, 209, 0.20);
+    border-color: rgba(204, 222, 228, 0.60);
+    box-shadow:
+        inset 0 0 18px rgba(255, 255, 255, 0.08),
+        0 0 28px rgba(138, 174, 189, 0.38);
+}
+
 .mini-menu-dots {
     font-size: 13px;
     font-weight: 700;
@@ -1643,6 +1661,27 @@ details.toc {
 
 .mini-menu.is-open .mini-menu-arrow-canvas {
     display: block;
+}
+
+.mini-menu-arrow-render {
+    position: absolute;
+    z-index: 3;
+    display: none;
+    width: 58%;
+    height: 58%;
+    color: var(--link-strong);
+    pointer-events: none;
+    filter:
+        drop-shadow(0 0 3px rgba(138, 174, 189, 0.62))
+        drop-shadow(0 0 8px rgba(138, 174, 189, 0.28));
+}
+
+.mini-menu.is-open .mini-menu-arrow-render {
+    display: block;
+}
+
+.mini-menu[data-arrow="right"] .mini-menu-arrow-render {
+    transform: scaleX(-1);
 }
 
 .mini-menu.is-open .mini-menu-toggle.no-arrow-canvas .mini-menu-arrow {
@@ -1972,7 +2011,8 @@ body.mini-menu-open .main {
         background: var(--entry);
         border-color: rgba(138, 174, 189, 0.46);
         box-shadow:
-            inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+            inset 0 0 18px rgba(255, 255, 255, 0.12),
+            0 0 26px rgba(138, 174, 189, 0.34),
             0 10px 24px -14px rgba(0, 0, 0, 0.65);
     }
 
@@ -2285,7 +2325,7 @@ body {
     z-index: 0;
     display: flex;
     align-items: flex-end;
-    gap: clamp(2px, 0.30vw, 4px);
+    gap: 0;
     padding: 0 clamp(18px, 5vw, 78px) 5px;
     pointer-events: none;
     opacity: 0.95;
@@ -2294,28 +2334,28 @@ body {
 }
 
 .player-viz-col {
-    display: flex;
+    position: relative;
     flex: 1 1 0;
-    flex-direction: column-reverse;
-    align-items: center;
-    justify-content: flex-start;
     height: 100%;
-    gap: 5px;
-    padding-bottom: 3px;
 }
 
 .player-viz-col b {
+    position: absolute;
+    left: 50%;
+    bottom: 6px;
     width: 3px;
     height: 3px;
     flex: none;
     background: var(--particle-active);
     border-radius: 1px;
-    box-shadow: 0 0 5px var(--particle-glow);
-    opacity: 0.04;
-    transform: scale(0.6);
+    box-shadow:
+        0 0 6px var(--particle-glow),
+        0 0 2px var(--particle-active);
+    opacity: 0.18;
+    transform: translateX(-50%);
     transition:
-        opacity 0.5s ease,
-        transform 0.5s ease;
+        bottom 0.52s ease,
+        opacity 0.52s ease;
 }
 
 @media (max-width: 899px) {
