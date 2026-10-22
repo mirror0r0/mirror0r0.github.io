@@ -236,15 +236,16 @@
 
             const x = ((pointerX - rect.left) / rect.width) * 100;
             const y = ((pointerY - rect.top) / rect.height) * 100;
+            const isNear = x > -8 && x < 108 && y > -10 && y < 110;
 
-            if (x < -12 || x > 112 || y < -12 || y > 112) {
-                panel.style.removeProperty("--spot-x");
-                panel.style.removeProperty("--spot-y");
+            if (!isNear) {
+                panel.style.setProperty("--spot-opacity", "0");
                 return;
             }
 
             panel.style.setProperty("--spot-x", `${Math.max(0, Math.min(100, x))}%`);
             panel.style.setProperty("--spot-y", `${Math.max(0, Math.min(100, y))}%`);
+            panel.style.setProperty("--spot-opacity", "1");
         };
 
         const schedule = () => {
@@ -262,8 +263,7 @@
 
         document.addEventListener("pointerleave", () => {
             hasPointer = false;
-            panel.style.removeProperty("--spot-x");
-            panel.style.removeProperty("--spot-y");
+            panel.style.setProperty("--spot-opacity", "0");
         });
 
         window.addEventListener("scroll", () => {
@@ -281,8 +281,8 @@
             return;
         }
 
-        const home = document.querySelector(".header .logo > a");
-        window.location.assign(home ? home.href : "/");
+        const home = new URL("/", window.location.origin);
+        window.location.assign(home.href);
     }
 
     button.addEventListener("click", goBack);

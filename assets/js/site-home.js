@@ -16,6 +16,11 @@
     const sourceElement = document.getElementById("home-hitokoto-source");
     const refreshButton = card.querySelector(".home-hitokoto-refresh");
 
+    // 入场动画结束后移除 animation，避免 transform 动画持续成为 fixed 子元素的包含块。
+    card.addEventListener("animationend", () => {
+        card.style.animation = "none";
+    }, { once: true });
+
     if (!textElement || !sourceElement || !refreshButton) {
         return;
     }

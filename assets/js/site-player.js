@@ -918,6 +918,162 @@
         }
     });
 
+    // 桌面端：每 0.5 秒采样一次频谱，用与背景一致的小粒子高度表示音量。
+    const visualizer = document.querySelector(".player-visualizer");
+    const visualizerColumns = [];
+    const VISUALIZER_COLUMNS = 48;
+    const VISUALIZER_ROWS = 6;
+
+    if (visualizer) {
+        for (let columnIndex = 0; columnIndex < VISUALIZER_COLUMNS; columnIndex += 1) {
+            const column = document.createElement("span");
+            const dots = [];
+            column.className = "player-viz-col";
+
+            for (let rowIndex = 0; rowIndex < VISUALIZER_ROWS; rowIndex += 1) {
+                const dot = document.createElement("b");
+                column.appendChild(dot);
+                dots.push(dot);
+            }
+
+            visualizer.appendChild(column);
+            visualizerColumns.push(dots);
+        }
+    }
+
+    const visualizerQuery = window.matchMedia("(min-width: 900px)");
+    let audioContext = null;
+    let visualizerAnalyser = null;
+    let visualizerData = null;
+    let visualizerTimer = 0;
+
+    function resetVisualizer() {
+        visualizerColumns.forEach((dots) => {
+            dots.forEach((dot) => {
+                dot.style.opacity = "0.04";
+                dot.style.transform = "scale(0.6)";
+            });
+        });
+    }
+
+    function createVisualizer() {
+        if (audioContext || !visualizerColumns.length || !visualizerQuery.matches || !audio) {
+            return;
+        }
+
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+        if (!AudioContextClass) {
+            return;
+        }
+
+        try {
+            audioContext = new AudioContextClass();
+            visualizerAnalyser = audioContext.createAnalyser();
+            visualizerAnalyser.fftSize = 128;
+            visualizerAnalyser.smoothingTimeConstant = 0.78;
+            const source = audioContext.createMediaElementSource(audio);
+            source.connect(visualizerAnalyser);
+            visualizerAnalyser.connect(audioContext.destination);
+            visualizerData = new Uint8Array(visualizerAnalyser.frequencyBinCount);
+        } catch (error) {
+            audioContext = null;
+            visualizerAnalyser = null;
+            visualizerData = null;
+
+            if (visualizer) {
+                visualizer.style.display = "none";
+            }
+        }
+    }
+
+    function drawVisualizer() {
+        if (!visualizerAnalyser || !visualizerData || audio.paused) {
+            resetVisualizer();
+            return;
+        }
+
+        visualizerAnalyser.getByteFrequencyData(visualizerData);
+
+        const totalColumns = visualizerColumns.length;
+        const binCount = visualizerData.length;
+
+        visualizerColumns.forEach((dots, columnIndex) => {
+            const start = Math.floor((columnIndex / totalColumns) * binCount);
+            const end = Math.max(start + 1, Math.floor(((columnIndex + 1) / totalColumns) * binCount));
+            let sum = 0;
+
+            for (let bin = start; bin < end; bin += 1) {
+                sum += visualizerData[bin];
+            }
+
+            const average = sum / Math.max(1, end - start);
+            const level = Math.pow(average / 255, 1.35);
+            const visibleRows = level * VISUALIZER_ROWS;
+
+            dots.forEach((dot, rowIndex) => {
+                const fill = Math.max(0, Math.min(1, visibleRows - rowIndex));
+                dot.style.opacity = fill > 0 ? String(0.16 + fill * 0.84) : "0.03";
+                dot.style.transform = `scale(${fill > 0 ? 1 : 0.6})`;
+            });
+        });
+    }
+
+    function startVisualizer() {
+        if (!visualizerQuery.matches) {
+            return;
+        }
+
+        if (!audioContext) {
+            return;
+        }
+
+        if (audioContext.state === "suspended") {
+            audioContext.resume().catch(() => {});
+        }
+
+        if (!visualizerTimer) {
+            visualizerTimer = window.setInterval(drawVisualizer, 500);
+        }
+
+        drawVisualizer();
+    }
+
+    function stopVisualizer() {
+        if (visualizerTimer) {
+            window.clearInterval(visualizerTimer);
+            visualizerTimer = 0;
+        }
+
+        resetVisualizer();
+    }
+
+    document.addEventListener("pointerdown", () => {
+        createVisualizer();
+
+        if (audioContext && audioContext.state === "suspended") {
+            audioContext.resume().catch(() => {});
+        }
+    }, { once: true, passive: true });
+
+    document.addEventListener("keydown", () => {
+        createVisualizer();
+
+        if (audioContext && audioContext.state === "suspended") {
+            audioContext.resume().catch(() => {});
+        }
+    }, { once: true });
+
+    visualizerQuery.addEventListener("change", () => {
+        if (visualizerQuery.matches && !audio.paused) {
+            startVisualizer();
+        } else {
+            stopVisualizer();
+        }
+    });
+
+    resetVisualizer();
+
     audio.addEventListener("play", () => {
         setStatus("");
         updatePlayButton(true);
@@ -925,10 +1081,12 @@
         schedulePreloadNext();
         capturePlayback();
         savePlayback(true);
+        startVisualizer();
     });
 
     audio.addEventListener("pause", () => {
         updatePlayButton(false);
+        stopVisualizer();
 
         // 页面跳转时浏览器可能会先重置媒体，再触发 pause；此时保留最后一次有效快照。
         if (

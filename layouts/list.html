@@ -79,6 +79,8 @@
       {{- end }}
     </h2>
   </header>
+  {{- $subtitle := .Params.subtitle | default .Description | default "生活日志" }}
+  <p class="entry-subtitle">{{ $subtitle | plainify }}</p>
   {{- if (ne (.Param "hideSummary") true) }}
   <div class="entry-content">
     <p>{{ .Summary | plainify | htmlUnescape }}{{ if .Truncated }}...{{ end }}</p>
@@ -86,7 +88,21 @@
   {{- end }}
   {{- if not (.Param "hideMeta") }}
   <footer class="entry-footer">
-    {{- partial "post_meta.html" . -}}
+    <div class="entry-date">{{- partial "post_meta.html" . -}}</div>
+    <div class="entry-stats" data-entry-metrics data-metrics-path="{{ .RelPermalink }}" aria-label="文章数据">
+      <span class="entry-stat" title="本机浏览量">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span data-metric="views">0</span>
+      </span>
+      <span class="entry-stat" title="评论">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-6 4V7a4 4 0 0 1 4-4h11a4 4 0 0 1 4 4Z"/></svg>
+        <span data-metric="comments">0</span>
+      </span>
+      <span class="entry-stat entry-stat-like" title="喜欢">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+        <span data-metric="likes">0</span>
+      </span>
+    </div>
   </footer>
   {{- end }}
   <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
