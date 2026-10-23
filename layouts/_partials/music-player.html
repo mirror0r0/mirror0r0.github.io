@@ -1,52 +1,94 @@
 {{- /*
     音乐播放器数据与结构
     - deta2/Music 下的音频（FLAC/AAC/M4A/MP3/OGG/OPUS/WAV）与 LRC 在构建时扫描；
-    - 歌词按文件名去掉全角括号内容后匹配，例如「歌名（mirrorAI）.flac」→「歌名.lrc」；
+    - 支持两种命名：
+      「歌名（版本）.aac」→ 标题「歌名」，副标题「版本」，字幕「歌名.lrc」；
+      「作者 - 歌名.aac」→ 标题「歌名」，副标题「作者」，字幕「作者 - 歌名.lrc」；
+    - 同一首歌同时存在多种格式时，优先使用体积更小/预载更快的格式；
     - 只有音频、没有歌词时前端显示「暂无字幕」。
 */ -}}
 {{- $musicDir := "deta2/Music" -}}
 {{- $entries := os.ReadDir $musicDir -}}
 {{- $audioExts := slice ".flac" ".aac" ".m4a" ".mp3" ".ogg" ".opus" ".wav" -}}
+{{- $formatPriority := dict ".aac" 0 ".m4a" 1 ".mp3" 2 ".ogg" 3 ".opus" 4 ".wav" 5 ".flac" 6 -}}
 {{- $lrcNames := slice -}}
 {{- range $entries -}}
     {{- if strings.HasSuffix (lower .Name) ".lrc" -}}
         {{- $lrcNames = $lrcNames | append .Name -}}
     {{- end -}}
 {{- end -}}
-{{- /* 个别文件名的字形差异在匹配时做一个别名修正。 */ -}}
-{{- $lrcAliases := dict "心做匕" "心做し" -}}
-{{- $tracks := slice -}}
+{{- /* 同一 base 存在 AAC/FLAC 等重复文件时，只保留优先级最高的一份。 */ -}}
+{{- $audioByBase := dict -}}
 {{- range $entries -}}
     {{- $ext := lower (path.Ext .Name) -}}
     {{- if in $audioExts $ext -}}
         {{- $base := strings.TrimSuffix (path.Ext .Name) .Name -}}
-        {{- $format := strings.TrimPrefix "." $ext | upper -}}
-        {{- $title := $base | replaceRE "（[^）]*）" "" | strings.TrimSpace -}}
-        {{- if not $title -}}{{- $title = $base -}}{{- end -}}
-        {{- $subtitle := "" -}}
+        {{- $priority := index $formatPriority $ext -}}
+        {{- $current := index $audioByBase $base -}}
+        {{- if not $current -}}
+            {{- $audioByBase = merge $audioByBase (dict $base .Name) -}}
+        {{- else -}}
+            {{- $currentPriority := index $formatPriority (lower (path.Ext $current)) -}}
+            {{- if lt $priority $currentPriority -}}
+                {{- $audioByBase = merge $audioByBase (dict $base .Name) -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+{{- $bases := slice -}}
+{{- range $base, $name := $audioByBase -}}
+    {{- $bases = $bases | append $base -}}
+{{- end -}}
+{{- $bases = sort $bases -}}
+{{- /* 个别文件名的字形差异在匹配时做一个别名修正。 */ -}}
+{{- $lrcAliases := dict "心做匕" "心做し" -}}
+{{- $tracks := slice -}}
+{{- range $bases -}}
+    {{- $base := . -}}
+    {{- $fileName := index $audioByBase $base -}}
+    {{- $ext := lower (path.Ext $fileName) -}}
+    {{- $format := strings.TrimPrefix "." $ext | upper -}}
+    {{- $title := $base -}}
+    {{- $subtitle := "" -}}
+    {{- $artist := "" -}}
+    {{- if in $base " - " -}}
+        {{- $parts := split $base " - " -}}
+        {{- $artist = index $parts 0 | strings.TrimSpace -}}
+        {{- $title = delimit (after 1 $parts) " - " | strings.TrimSpace -}}
+        {{- $subtitle = $artist -}}
+    {{- else -}}
+        {{- $title = $base | replaceRE "（[^）]*）" "" | strings.TrimSpace -}}
         {{- with findRE "（[^）]*）" $base 1 -}}
             {{- $subtitle = index . 0 | strings.TrimPrefix "（" | strings.TrimSuffix "）" -}}
         {{- end -}}
-        {{- $lrcName := printf "%s.lrc" $title -}}
-        {{- if not (in $lrcNames $lrcName) -}}
-            {{- with index $lrcAliases $title -}}
-                {{- $aliasName := printf "%s.lrc" . -}}
-                {{- if in $lrcNames $aliasName -}}{{- $lrcName = $aliasName -}}{{- end -}}
-            {{- end -}}
-        {{- end -}}
-        {{- $lrcURL := "" -}}
-        {{- if in $lrcNames $lrcName -}}
-            {{- $lrcURL = printf "%s/%s" $musicDir $lrcName | relURL -}}
-        {{- end -}}
-        {{- $tracks = $tracks | append (dict
-            "title" $title
-            "name" $base
-            "subtitle" $subtitle
-            "format" $format
-            "src" (printf "%s/%s" $musicDir .Name | relURL)
-            "lrc" $lrcURL
-        ) -}}
     {{- end -}}
+    {{- if not $title -}}{{- $title = $base -}}{{- end -}}
+    {{- $candidates := slice (printf "%s.lrc" $base) (printf "%s.lrc" $title) -}}
+    {{- with $subtitle -}}
+        {{- $candidates = $candidates | append (printf "%s - %s.lrc" . $title) -}}
+    {{- end -}}
+    {{- with index $lrcAliases $title -}}
+        {{- $candidates = $candidates | append (printf "%s.lrc" .) -}}
+    {{- end -}}
+    {{- $lrcName := "" -}}
+    {{- range $candidate := $candidates -}}
+        {{- if and (not $lrcName) (in $lrcNames $candidate) -}}
+            {{- $lrcName = $candidate -}}
+        {{- end -}}
+    {{- end -}}
+    {{- $lrcURL := "" -}}
+    {{- if $lrcName -}}
+        {{- $lrcURL = printf "%s/%s" $musicDir $lrcName | relURL -}}
+    {{- end -}}
+    {{- $tracks = $tracks | append (dict
+        "title" $title
+        "name" $base
+        "subtitle" $subtitle
+        "artist" $artist
+        "format" $format
+        "src" (printf "%s/%s" $musicDir $fileName | relURL)
+        "lrc" $lrcURL
+    ) -}}
 {{- end -}}
 {{- $tracks = sort $tracks "title" "asc" -}}
 <script>

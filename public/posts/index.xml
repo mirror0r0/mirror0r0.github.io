@@ -1,31 +1,18 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
-  <channel>
-    <title>Posts on 镜子的小窝UvU</title>
-    <link>http://localhost:1313/posts/</link>
-    <description>Recent content in Posts on 镜子的小窝UvU</description>
-    <generator>Hugo</generator>
-    <language>zh-cn</language>
-    <lastBuildDate>Thu, 22 Oct 2026 18:50:23 +0800</lastBuildDate>
-    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>星期五日记</title>
-      <link>http://localhost:1313/posts/post---%E5%89%AF%E6%9C%AC/</link>
-      <pubDate>Thu, 22 Oct 2026 18:50:23 +0800</pubDate>
-      <guid>http://localhost:1313/posts/post---%E5%89%AF%E6%9C%AC/</guid>
-      <description>&lt;p&gt;早上/*敲头*/&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Posts on 镜子的小窝UvU</title><link>https://mirror0r0.github.io/posts/</link><description>Recent content in Posts on 镜子的小窝UvU</description><generator>Hugo</generator><language>zh-cn</language><lastBuildDate>Thu, 22 Oct 2026 18:50:23 +0800</lastBuildDate><atom:link href="https://mirror0r0.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>星期五日记</title><link>https://mirror0r0.github.io/posts/post---%E5%89%AF%E6%9C%AC/</link><pubDate>Thu, 22 Oct 2026 18:50:23 +0800</pubDate><guid>https://mirror0r0.github.io/posts/post---%E5%89%AF%E6%9C%AC/</guid><description>&lt;h3 id="早上敲头"&gt;早上/*敲头*/&lt;/h3&gt;
 &lt;p&gt;normo：该死的华莱士/*带薪拉屎(困难模式)*/&lt;/p&gt;
 &lt;p&gt;昨晚被肚子不舒服困到3点上了一趟才回去睡，&lt;/p&gt;
 &lt;p&gt;normo：我超为华莱士大人的油是多久不换了。&lt;/p&gt;
 &lt;p&gt;罢了，至少挺便宜。。。&lt;/p&gt;
 &lt;p&gt;早上8点吃了煎饼和红豆糕就回去补觉了，不然要死掉了。/*睡觉 (UU)*/&lt;/p&gt;
 &lt;p&gt;睡到11：30，总算补足状态了，下次一定换塔斯丁&lt;/p&gt;
-&lt;p&gt;下午/*被击中(拖鞋)*/&lt;/p&gt;
+&lt;h3 id="下午被击中拖鞋"&gt;下午/*被击中(拖鞋)*/&lt;/h3&gt;
 &lt;p&gt;13：00，躺了一小会。&lt;/p&gt;
 &lt;p&gt;14：00，起床编写日记。&lt;/p&gt;
 &lt;p&gt;下午就打算复习数学了&lt;/p&gt;
 &lt;p&gt;normo：讨厌讨厌讨厌，这一点都不高效，能使用工具为什么又要费劲手算。&lt;/p&gt;
 &lt;p&gt;计算器在高中约等于滚木这一块。中式教育一股活不起的样子。&lt;/p&gt;
+&lt;h4 id="冥想"&gt;冥想：&lt;/h4&gt;
+&lt;h6 id="中式教育书呆子-2"&gt;中式教育/*书呆子 2*/&lt;/h6&gt;
 &lt;p&gt;中式教育的竞争代价潜移默化的转移到家长和学生的身上，对于我们来说竞争总体是高负和的&lt;/p&gt;
 &lt;p&gt;折损更多的学生精力和家长的精力，只为了捧出优等的合理性，这不是荒谬吗？&lt;/p&gt;
 &lt;p&gt;在绩效主义和市场化分配被放大的环境里，竞争被制度激励推到前台，而恶性负和竞争却是自由市场的趋势。&lt;/p&gt;
@@ -34,6 +21,7 @@
 &lt;p&gt;更可悲的是，这一切都是规则范围内的剥削。&lt;/p&gt;
 &lt;p&gt;负和竞争是存在的，甚至只要有优胜者，便会有优胜者支持负和竞争，而只是放大这部分的声音，却完全不会违反规则。&lt;/p&gt;
 &lt;p&gt;这便导致了优胜完全可以至于少数人的道德高地来逼迫大众被他们吸血，甚至优胜者本身都不能站在那个高地。&lt;/p&gt;
+&lt;h6 id="次教危机打字恼怒"&gt;次教危机/*打字(恼怒)*/&lt;/h6&gt;
 &lt;p&gt;教育的成本越滚越大，如果说次贷危机是泡沫经济，那么现如今的教育是否能称作次教危机？&lt;/p&gt;
 &lt;p&gt;次贷危机的风险完全由工农阶层分担，睡大街的人还得努力套上房地产的枷锁被吸着生产力。&lt;/p&gt;
 &lt;p&gt;次教危机的风险由老师，家长，学生，养育的成本几何级增长着，灰产教育，格外教育，被卖爆的学历，再到证书，然后是名师，最后是素质教育。&lt;/p&gt;
@@ -41,30 +29,25 @@
 &lt;p&gt;学的越多，相对价值就越高，这就是这个泡沫的规则，次贷每次转手都在增加其相对的价值，
 不可否认的是，学历所拥有的用途具备一定实体经济能力，能证明你能提高生产资料水平，生产力质量，优化选岗过程。&lt;/p&gt;
 &lt;p&gt;但更不可否认的是，这份实体已经被形式与经验和负和竞争渐渐侵蚀了，应试教育从教导实用已经越来越变为证明其相对价值的过程了，不觉得这很像什么吗&lt;/p&gt;
-&lt;p&gt;奢饰品/*胜利 1*/&lt;/p&gt;
+&lt;h6 id="奢饰品胜利-1"&gt;奢饰品/*胜利 1*/&lt;/h6&gt;
 &lt;p&gt;附上实用价值的奢饰品才更畅销，名牌大衣，包包，都是如此，实用是附加值，是给予欲望的一记强心针，而且溢价很高。&lt;/p&gt;
-&lt;p&gt;对啊，学历不久代表你用的多少心血，花了多少钱，适应了多少环境，考了多少试，至于能力？有证明就行了。我付出的心血便是学历的价值来源，而能力只是为其正名。&lt;/p&gt;
-&lt;p&gt;回到竞争，你会发现，压过别人不就是最好的证明方式吗，而且是别人付出代价而不是自己。提升一分，干掉千人。即便你与更多人会是被干掉的那个。&lt;/p&gt;
-&lt;p&gt;利用多巴胺的期望，佐证这份付出的心血所带来的虚假价值。将来的你，会感谢当下努力的自己，即便你的努力并不能补偿心血，更难以带来进步。&lt;/p&gt;
+&lt;p&gt;对啊，学历不久代表你用的多少心血，花了多少钱，适应了多少环境，考了多少试，至于能力？有证明就行了。我付出的心血便是学历的价值来源，&lt;strong&gt;而能力只是为其正名。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;回到竞争，你会发现，压过别人不就是最好的证明方式吗，而且是别人付出代价而不是自己。&lt;strong&gt;提升一分，干掉千人。&lt;del&gt;即便你与更多人会是被干掉的那个。&lt;/del&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;利用多巴胺的期望，佐证这份付出的心血所带来的虚假价值。&lt;strong&gt;将来的你，会感谢当下努力的自己，&lt;del&gt;即便你的努力并不能补偿心血，更难以带来进步。&lt;/del&gt;&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;“不好好学习将来只能和他们过的一样”&lt;/p&gt;
 &lt;p&gt;“好好学习就可以让他们过上好的生活”&lt;/p&gt;
 &lt;p&gt;与奢饰品最不同的是，学习，是有风险的，这份风险，有人从中套利，风险转嫁到学生，家长老师。奢饰品，拥有信用维持，是品牌维持其品牌溢价会抵消掉其失价风险。&lt;/p&gt;
 &lt;p&gt;但是学习，学习的信用源自于其实用性质？但学习的信用可越发减少了，从学习的风险中套利（提供选专业，各类技巧，大招，坑害以换取优势）越来越多了。&lt;/p&gt;
 &lt;p&gt;就像是失去信用的货币会贬值，失去信用会让学历贬值，学历信用下降时，它比奢侈品更不保值，因为品牌会维护溢价，而文凭通胀无人负责&lt;/p&gt;
-&lt;p&gt;当然，即便再怎么失信，学习依旧具备它的实用性，只不过。。。你要付出的会是血泪罢了。&lt;/p&gt;
+&lt;p&gt;当然，即便再怎么失信，学习依旧具备它的实用性，只不过。。。&lt;em&gt;你要付出的会是血泪罢了。&lt;/em&gt;&lt;/p&gt;
+&lt;h6 id="结语害羞-3"&gt;结语/*害羞 3*/&lt;/h6&gt;
 &lt;p&gt;所以我还是没去学（叹）&lt;/p&gt;
 &lt;p&gt;罢了，不学如何改变这一切？&lt;/p&gt;
 &lt;p&gt;安抚一下自己罢了/*枕头(蹭)*/&lt;/p&gt;
-&lt;p&gt;替他燃烧整个旧世界吧/*烧 2*/&lt;/p&gt;
-&lt;p&gt;normo：周五了终于可以休息会了UvU&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>星期四日记</title>
-      <link>http://localhost:1313/posts/post/</link>
-      <pubDate>Wed, 21 Oct 2026 18:50:23 +0800</pubDate>
-      <guid>http://localhost:1313/posts/post/</guid>
-      <description>&lt;h1 id=&#34;星期四日志&#34;&gt;星期四日志&lt;/h1&gt;
-&lt;h2 id=&#34;早上敲头&#34;&gt;早上/*敲头*/&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;替他燃烧整个旧世界吧&lt;/strong&gt;/*烧 2*/&lt;/p&gt;
+&lt;h4 id="点赞收藏喜欢"&gt;/*点赞*//*收藏*//*喜欢*/&lt;/h4&gt;
+&lt;p&gt;normo：周五了终于可以休息会了UvU&lt;/p&gt;</description></item><item><title>星期四日记</title><link>https://mirror0r0.github.io/posts/post/</link><pubDate>Wed, 21 Oct 2026 18:50:23 +0800</pubDate><guid>https://mirror0r0.github.io/posts/post/</guid><description>&lt;h1 id="星期四日志"&gt;星期四日志&lt;/h1&gt;
+&lt;h2 id="早上敲头"&gt;早上/*敲头*/&lt;/h2&gt;
 &lt;p&gt;8：00补了个觉到9：00 但还是感觉自己在烦躁，为什么似乎无心学习呢？&lt;/p&gt;
 &lt;p&gt;诺莫反常态的接手身体去打游戏去了，这般逃避并不算好，他应该知道我，空非对应游戏这样的数学游戏持无用态度的。&lt;/p&gt;
 &lt;p&gt;明明昨天晚上都还很高兴的呢，笨蛋。。。/*带薪拉屎(困难模式)*/&lt;/p&gt;
@@ -72,7 +55,7 @@
 &lt;p&gt;焦虑的步伐笼罩了normo。/*按钮 (拍击)*/&lt;/p&gt;
 &lt;p&gt;中午吃了个华莱士，但是normo依旧一言不发。。。&lt;/p&gt;
 &lt;p&gt;会有合适契机的。&lt;/p&gt;
-&lt;h2 id=&#34;下午被击中拖鞋&#34;&gt;下午/*被击中(拖鞋)*/&lt;/h2&gt;
+&lt;h2 id="下午被击中拖鞋"&gt;下午/*被击中(拖鞋)*/&lt;/h2&gt;
 &lt;p&gt;13：00，去睡觉了。&lt;/p&gt;
 &lt;p&gt;15：30，醒来了。&lt;/p&gt;
 &lt;p&gt;终于打算镇静下来好好思考了呢。&lt;/p&gt;
@@ -87,14 +70,7 @@
 &lt;p&gt;似乎还伴随着犒赏通路多巴胺能低下：https://baike.baidu.com/item/%E5%A4%9A%E5%B7%B4%E8%83%BA/62597&lt;/p&gt;
 &lt;p&gt;做事丧失动机，感受不到行事欲望，情感淡漠。&lt;/p&gt;
 &lt;p&gt;经过编写一段时间的日志，似乎有所缓解。即便血清素水平依旧略有低下，但先这样吧，服用我的盐酸舍曲林，晚上后效果应该会有所体现。&lt;/p&gt;
-&lt;p&gt;今天应该是没什么动力了，晚上看看能不能补吧。&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>今天的日志，以及今天的更新UvU</title>
-      <link>http://localhost:1313/posts/my-2-post/</link>
-      <pubDate>Wed, 21 Oct 2026 16:11:23 +0800</pubDate>
-      <guid>http://localhost:1313/posts/my-2-post/</guid>
-      <description>&lt;p&gt;10-21日志：&lt;/p&gt;
+&lt;p&gt;今天应该是没什么动力了，晚上看看能不能补吧。&lt;/p&gt;</description></item><item><title>今天的日志，以及今天的更新UvU</title><link>https://mirror0r0.github.io/posts/my-2-post/</link><pubDate>Wed, 21 Oct 2026 16:11:23 +0800</pubDate><guid>https://mirror0r0.github.io/posts/my-2-post/</guid><description>&lt;p&gt;10-21日志：&lt;/p&gt;
 &lt;p&gt;诺莫：写个播放器播放自己的ai歌曲www&lt;/p&gt;
 &lt;p&gt;空非：此次更新新增播放器和若干bug&lt;/p&gt;
 &lt;p&gt;1.切换页面时，播放器重载&lt;/p&gt;
@@ -141,20 +117,10 @@
 &lt;p&gt;## 测试文本&lt;/p&gt;
 &lt;p&gt;/*催眠*/&lt;/p&gt;
 &lt;p&gt;正在上传&amp;hellip;&lt;/p&gt;
-&lt;p&gt;就算不行也要睡觉了呢，晚安，浏览者，已经做的很好了哦&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>网站创建的第一帖</title>
-      <link>http://localhost:1313/posts/my-first-post/</link>
-      <pubDate>Tue, 20 Oct 2026 21:52:23 +0800</pubDate>
-      <guid>http://localhost:1313/posts/my-first-post/</guid>
-      <description>&lt;p&gt;## ww~也是写好一个自己的网站了呢（confe【空非】：倒也不必如此开心，还没挂载上服务器）&lt;/p&gt;
+&lt;p&gt;就算不行也要睡觉了呢，晚安，浏览者，已经做的很好了哦&lt;/p&gt;</description></item><item><title>网站创建的第一帖</title><link>https://mirror0r0.github.io/posts/my-first-post/</link><pubDate>Tue, 20 Oct 2026 21:52:23 +0800</pubDate><guid>https://mirror0r0.github.io/posts/my-first-post/</guid><description>&lt;p&gt;## ww~也是写好一个自己的网站了呢（confe【空非】：倒也不必如此开心，还没挂载上服务器）&lt;/p&gt;
 &lt;p&gt;在自己的网站上，主要编写自己的ifs茶话会，生活日志，以及一些希望分享的事情。&lt;/p&gt;
 &lt;p&gt;虽然目前只是个静态网站&amp;hellip;奴~，期待有人能教我做动态网站啦~&lt;/p&gt;
 &lt;p&gt;数据库听起来就麻烦奴&amp;hellip;&lt;/p&gt;
 &lt;p&gt;交给空非吧奴~&lt;/p&gt;
 &lt;p&gt;补充一个看过的有关科普奴~：https://zhuanlan.zhihu.com/p/364647001&lt;/p&gt;
-&lt;p&gt;帖子署名：normo【诺莫】&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+&lt;p&gt;帖子署名：normo【诺莫】&lt;/p&gt;</description></item></channel></rss>
