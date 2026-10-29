@@ -40,6 +40,10 @@ personal_links:
     url: "https://www.4399.com/"
     note: "为什么我要写这个（追忆童年哒~）"
 
+  - name: "游戏大厅"
+    url: "/game/"
+    note: "Echo Arena · 与上一局的自己对抗"
+
 more_about: |
   这里是镜子的个人小站。
   除了日志，也会慢慢放一些自己喜欢的东西。
