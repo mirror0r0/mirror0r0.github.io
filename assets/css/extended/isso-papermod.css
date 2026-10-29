@@ -1,7 +1,7 @@
 /* Isso 评论系统 - PaperMod 主题适配 */
 
 /* 亮色模式：映射 PaperMod CSS 变量到 Isso 变量 */
-:root {
+:root:root {
     --isso-primary-text-color: var(--content, rgb(31, 31, 31));
     --isso-secondary-text-color: var(--secondary, #808080);
     --isso-border: 1px solid var(--border, rgb(238, 238, 238));
@@ -26,9 +26,32 @@
     --isso-target-fade-background-color: rgba(238, 229, 161, 0.3);
 }
 
-/* 暗色模式适配 */
+/* 暗色模式：以站点 data-theme 为准；auto 时跟随系统 */
+:root:root[data-theme="dark"] {
+    --isso-primary-text-color: var(--content, rgb(196, 196, 197));
+    --isso-secondary-text-color: var(--secondary, #999);
+    --isso-border: 1px solid var(--border, rgb(51, 51, 51));
+    --isso-box-shadow-color: rgba(0, 0, 0, 0.2);
+    --isso-hover-color: var(--primary, rgb(218, 218, 219));
+    --isso-link-hover-color: var(--primary, rgb(218, 218, 219));
+    --isso-input-background-color: var(--entry, rgb(46, 46, 51));
+    --isso-input-outline-color: var(--primary, rgb(218, 218, 219));
+    --isso-button-background-color: var(--entry, rgb(46, 46, 51));
+    --isso-button-border: 1px solid var(--border, rgb(51, 51, 51));
+    --isso-button-hover-background-color: var(--border, rgb(51, 51, 51));
+    --isso-button-active-background-color: var(--border, rgb(51, 51, 51));
+    --isso-preview-border-color: var(--border, rgb(51, 51, 51));
+    --isso-preview-background: var(--entry, rgb(46, 46, 51));
+    --isso-pre-color: var(--content, rgb(196, 196, 197));
+    --isso-pre-background-color: var(--code-bg, #2d2d33);
+    --isso-pre-border-color: var(--border, rgb(51, 51, 51));
+    --isso-comment-divider-color: var(--border, rgb(51, 51, 51));
+    --isso-page-author-suffix-color: var(--primary, rgb(218, 218, 219));
+    --isso-target-fade-background-color: rgba(238, 229, 161, 0.15);
+}
+
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:root[data-theme="auto"] {
         --isso-primary-text-color: var(--content, rgb(196, 196, 197));
         --isso-secondary-text-color: var(--secondary, #999);
         --isso-border: 1px solid var(--border, rgb(51, 51, 51));
@@ -182,4 +205,58 @@
 .isso-votes {
     font-size: 0.8rem;
     color: var(--secondary);
+}
+
+/* 站点主题覆盖：Isso 自身注入的样式会覆盖普通 :root 变量，这里用更高优先级落到实际元素上。 */
+body #isso-thread {
+    background-color: var(--entry);
+    color: var(--primary);
+}
+
+body #isso-thread .isso-postbox {
+    color: var(--secondary);
+}
+
+body #isso-thread .isso-thread-heading {
+    color: var(--primary);
+}
+
+body #isso-thread .isso-comment-header,
+body #isso-thread .isso-comment-footer,
+body #isso-thread .isso-votes {
+    color: var(--secondary);
+}
+
+body #isso-thread .isso-comment-author {
+    color: var(--primary);
+}
+
+body #isso-thread .isso-text {
+    color: var(--content);
+}
+
+body #isso-thread .isso-preview {
+    background-color: var(--isso-preview-background);
+    border-color: var(--isso-preview-border-color);
+}
+
+body #isso-thread label {
+    color: var(--secondary);
+}
+
+body #isso-thread textarea::placeholder {
+    color: var(--secondary);
+    opacity: 0.72;
+}
+
+body #isso-thread a {
+    color: var(--link);
+}
+
+body #isso-thread .isso-comment-footer a {
+    color: var(--secondary);
+}
+
+body #isso-thread .isso-comment-footer a:hover {
+    color: var(--primary);
 }
