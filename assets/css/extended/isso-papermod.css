@@ -208,6 +208,8 @@
 
 /* 站点主题覆盖：Isso 自身注入的样式会覆盖普通 :root 变量，这里用更高优先级落到实际元素上。 */
 body #isso-thread {
+    /* 与 .post-content 的内边距保持一致，让表单宽度等于正文文本容器宽度。 */
+    padding: clamp(20px, 3.8vw, 34px);
     background-color: var(--entry);
     color: var(--primary);
 }
