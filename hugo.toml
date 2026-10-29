@@ -1,4 +1,4 @@
-baseURL = 'https://mirror0r0.github.io/'
+baseURL = 'http://8.134.185.227/'
 locale = 'zh-cn'
 title = '镜子的小窝UvU'
 theme = 'PaperMod'
@@ -9,13 +9,13 @@ unsafe = true
 
 # Giscus 配置。category 必须与 GitHub Discussions 里的分类名称一致；
 # categoryID 从 Giscus 配置页复制，换分类时两者都要更新。
-[params.giscus]
-  repo = "mirror0r0/mirror0r0.github.io"
-  repoID = "R_kgDOVRzAig"
-  category = "General"
-  categoryID = "DIC_kwDOVRzAis4DJU1W"
-  categoryLabel = "关于网站"
-
+#[params.giscus]
+#  repo = "mirror0r0/mirror0r0.github.io"
+#  repoID = "R_kgDOVRzAig"
+#  category = "General"
+#  categoryID = "DIC_kwDOVRzAis4DJU1W"
+#  categoryLabel = "关于网站"
+#
 [outputs]
   home = ["HTML", "RSS", "JSON"]
 

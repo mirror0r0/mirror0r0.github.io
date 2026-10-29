@@ -43,17 +43,6 @@
     {{- end }}
 {{- end }}
 
-{{- if and .IsPage (.Param "comments") }}
-    {{- with resources.Get "js/site-giscus.js" }}
-        {{- $js := . | resources.Minify }}
-        {{- if not site.Params.assets.disableFingerprinting }}
-            {{- $js = $js | resources.Fingerprint }}
-            <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
-        {{- else }}
-            <script defer src="{{ $js.RelPermalink }}"></script>
-        {{- end }}
-    {{- end }}
-{{- end }}
 
 {{- if not .IsHome }}
     {{- with resources.Get "js/site-back.js" }}

@@ -755,14 +755,12 @@ body.list,
     position: relative;
     margin: 30px 0 12px;
     padding: clamp(20px, 3.8vw, 34px);
-    background-color: var(--card-panel);
+    background-color: var(--entry);
     border: 1px solid var(--border);
     border-radius: 22px;
     box-shadow:
         0 2px 4px rgba(46, 72, 84, 0.04),
         0 30px 68px -44px rgba(46, 72, 84, 0.42);
-    -webkit-backdrop-filter: blur(10px) saturate(118%);
-    backdrop-filter: blur(10px) saturate(118%);
 }
 
 :root[data-theme="dark"] .post-comments {

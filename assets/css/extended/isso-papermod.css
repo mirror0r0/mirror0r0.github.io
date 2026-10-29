@@ -1,0 +1,185 @@
+/* Isso 评论系统 - PaperMod 主题适配 */
+
+/* 亮色模式：映射 PaperMod CSS 变量到 Isso 变量 */
+:root {
+    --isso-primary-text-color: var(--content, rgb(31, 31, 31));
+    --isso-secondary-text-color: var(--secondary, #808080);
+    --isso-border: 1px solid var(--border, rgb(238, 238, 238));
+    --isso-box-shadow-color: rgba(0, 0, 0, 0.05);
+    --isso-hover-color: var(--primary, rgb(30, 30, 30));
+    --isso-link-hover-color: var(--primary, rgb(30, 30, 30));
+    --isso-link-text-shadow-color: transparent;
+    --isso-input-background-color: var(--entry, rgb(255, 255, 255));
+    --isso-input-outline-color: var(--primary, rgb(30, 30, 30));
+    --isso-button-background-color: var(--entry, rgb(255, 255, 255));
+    --isso-button-border: 1px solid var(--border, rgb(238, 238, 238));
+    --isso-button-hover-background-color: var(--border, rgb(238, 238, 238));
+    --isso-button-active-background-color: var(--border, rgb(238, 238, 238));
+    --isso-preview-border-color: var(--border, rgb(238, 238, 238));
+    --isso-preview-box-shadow-color: rgba(0, 0, 0, 0.05);
+    --isso-preview-background: var(--entry, rgb(255, 255, 255));
+    --isso-pre-color: var(--content, rgb(31, 31, 31));
+    --isso-pre-background-color: var(--code-bg, #f5f5f5);
+    --isso-pre-border-color: var(--border, rgb(238, 238, 238));
+    --isso-comment-divider-color: var(--border, rgb(238, 238, 238));
+    --isso-page-author-suffix-color: var(--primary, rgb(30, 30, 30));
+    --isso-target-fade-background-color: rgba(238, 229, 161, 0.3);
+}
+
+/* 暗色模式适配 */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --isso-primary-text-color: var(--content, rgb(196, 196, 197));
+        --isso-secondary-text-color: var(--secondary, #999);
+        --isso-border: 1px solid var(--border, rgb(51, 51, 51));
+        --isso-box-shadow-color: rgba(0, 0, 0, 0.2);
+        --isso-hover-color: var(--primary, rgb(218, 218, 219));
+        --isso-link-hover-color: var(--primary, rgb(218, 218, 219));
+        --isso-input-background-color: var(--entry, rgb(46, 46, 51));
+        --isso-input-outline-color: var(--primary, rgb(218, 218, 219));
+        --isso-button-background-color: var(--entry, rgb(46, 46, 51));
+        --isso-button-border: 1px solid var(--border, rgb(51, 51, 51));
+        --isso-button-hover-background-color: var(--border, rgb(51, 51, 51));
+        --isso-button-active-background-color: var(--border, rgb(51, 51, 51));
+        --isso-preview-border-color: var(--border, rgb(51, 51, 51));
+        --isso-preview-background: var(--entry, rgb(46, 46, 51));
+        --isso-pre-color: var(--content, rgb(196, 196, 197));
+        --isso-pre-background-color: var(--code-bg, #2d2d33);
+        --isso-pre-border-color: var(--border, rgb(51, 51, 51));
+        --isso-comment-divider-color: var(--border, rgb(51, 51, 51));
+        --isso-page-author-suffix-color: var(--primary, rgb(218, 218, 219));
+        --isso-target-fade-background-color: rgba(238, 229, 161, 0.15);
+    }
+}
+
+/* 布局与排版融入 PaperMod */
+#isso-thread {
+    max-width: var(--main-width, 720px);
+    margin: 2rem auto 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+/* 评论头部标题融入文章风格 */
+.post-comments-head {
+    margin-bottom: 1.5rem;
+}
+.post-comments-kicker {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--secondary);
+    margin-bottom: 0.25rem;
+}
+.post-comments-head h2 {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem;
+    color: var(--primary);
+}
+.post-comments-head p {
+    color: var(--secondary);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* 输入框和按钮圆角统一 */
+#isso-thread textarea,
+#isso-thread input[type="text"],
+#isso-thread input[type="email"],
+#isso-thread input[type="url"] {
+    border-radius: var(--radius, 8px);
+    border: var(--isso-border);
+    background: var(--isso-input-background-color);
+    color: var(--isso-primary-text-color);
+    padding: 0.6rem 0.8rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+}
+#isso-thread textarea:focus,
+#isso-thread input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+#isso-thread button,
+#isso-thread .isso-post-action button {
+    border-radius: var(--radius, 8px);
+    border: var(--isso-button-border);
+    background: var(--isso-button-background-color);
+    color: var(--isso-primary-text-color);
+    padding: 0.5rem 1.2rem;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#isso-thread button:hover {
+    background: var(--isso-button-hover-background-color);
+}
+
+/* 评论卡片样式 */
+.isso-comment {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--isso-comment-divider-color);
+}
+.isso-comment:last-child {
+    border-bottom: none;
+}
+.isso-comment-header {
+    font-size: 0.85rem;
+    color: var(--secondary);
+    margin-bottom: 0.5rem;
+}
+.isso-comment-author {
+    font-weight: 600;
+    color: var(--primary);
+}
+.isso-text {
+    color: var(--content);
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+.isso-text p {
+    margin: 0.5rem 0;
+}
+.isso-text code {
+    background: var(--code-bg, #f5f5f5);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+.isso-text pre {
+    background: var(--isso-pre-background-color);
+    border: 1px solid var(--isso-pre-border-color);
+    border-radius: var(--radius, 8px);
+    padding: 0.8rem 1rem;
+    overflow-x: auto;
+}
+
+/* 头像大小统一 */
+.isso-avatar svg {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius, 8px);
+}
+
+/* 回复链接和操作按钮 */
+.isso-comment-footer a {
+    color: var(--secondary);
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.isso-comment-footer a:hover {
+    color: var(--primary);
+}
+
+/* 投票按钮 */
+.isso-votes {
+    font-size: 0.8rem;
+    color: var(--secondary);
+}
