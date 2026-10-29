@@ -30,7 +30,7 @@ unsafe = true
 
 # PaperMod 内置的标题图标：显示在站点标题左侧。
 [params.label]
-  icon = 'deta2/我的头像.jpg'
+  icon = 'images/avatar.jpg'
   iconHeight = 40
 
 [params.assets]

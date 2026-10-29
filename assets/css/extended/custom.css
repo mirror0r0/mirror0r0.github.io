@@ -755,6 +755,7 @@ body.list,
     position: relative;
     margin: 30px 0 12px;
     padding: clamp(20px, 3.8vw, 34px);
+    /* 不使用 backdrop-filter：避免 iframe 在登录后输入时被卷进模糊合成层而卡死。 */
     background-color: var(--entry);
     border: 1px solid var(--border);
     border-radius: 22px;
@@ -807,6 +808,7 @@ body.list,
 }
 
 .giscus-frame {
+    display: block;
     width: 100%;
     border: 0;
 }
