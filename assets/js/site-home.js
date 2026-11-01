@@ -58,6 +58,15 @@
     function applyQuote(text, source) {
         textElement.textContent = text;
         sourceElement.textContent = source ? `—— ${source}` : "—— 一言";
+
+        const quote = textElement.closest("blockquote");
+
+        if (quote) {
+            quote.classList.remove("is-swapping");
+            // 强制重排以重新触发浮现动画。
+            void quote.offsetWidth;
+            quote.classList.add("is-swapping");
+        }
     }
 
     function formatSource(data) {

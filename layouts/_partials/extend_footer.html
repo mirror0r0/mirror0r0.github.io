@@ -31,6 +31,16 @@
     {{- end }}
 {{- end }}
 
+{{- with resources.Get "js/site-motion.js" }}
+    {{- $js := . | resources.Minify }}
+    {{- if not site.Params.assets.disableFingerprinting }}
+        {{- $js = $js | resources.Fingerprint }}
+        <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+    {{- else }}
+        <script defer src="{{ $js.RelPermalink }}"></script>
+    {{- end }}
+{{- end }}
+
 {{- if eq .Layout "search" }}
     {{- with resources.Get "js/site-search.js" }}
         {{- $js := . | resources.Minify }}

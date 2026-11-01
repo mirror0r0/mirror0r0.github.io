@@ -1,0 +1,268 @@
+/* ==========================================================================
+   Motion · 动效增强层
+   只新增，不覆盖既有动画（custom.css / 主题自带）。
+   规则：
+   - 只动 transform / opacity，保证合成层平滑；
+   - 默认静态，入场动画只在 prefers-reduced-motion: no-preference 下启用；
+   - PC 与手机分开：hover 能力用 (hover: hover) / (hover: none) 区分，
+     窄屏微调用 (max-width: 899px)。
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   关键帧
+   -------------------------------------------------------------------------- */
+@keyframes pm-fade-soft {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes pm-rise-soft {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes pm-drop-soft {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes pm-slide-up-soft {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes pm-quote-swap {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes pm-icon-turn {
+    from { opacity: 0; transform: rotate(-90deg) scale(0.6); }
+    to { opacity: 1; transform: rotate(0deg) scale(1); }
+}
+
+/* --------------------------------------------------------------------------
+   入场：顶栏 / 播放器
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+    .header {
+        animation: pm-drop-soft 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .site-player:not([hidden]) {
+        animation: pm-slide-up-soft 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   文章 / 列表页头部：面包屑 → 标题 → 元信息 依次浮现
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+
+    .post-single .post-header > *,
+    .page-header > * {
+        animation: pm-rise-soft 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .post-single .post-header > :nth-child(1),
+    .page-header > :nth-child(1) { animation-delay: 0.02s; }
+
+    .post-single .post-header > :nth-child(2),
+    .page-header > :nth-child(2) { animation-delay: 0.08s; }
+
+    .post-single .post-header > :nth-child(3),
+    .page-header > :nth-child(3) { animation-delay: 0.15s; }
+
+    .post-single .post-header > :nth-child(4),
+    .page-header > :nth-child(4) { animation-delay: 0.22s; }
+}
+
+/* --------------------------------------------------------------------------
+   正文图片：加载时柔合浮现（由 site-motion.js 添加 is-loaded 标记）
+   -------------------------------------------------------------------------- */
+html.has-motion .post-content img:not(.meme-inline),
+html.has-motion .md-content img:not(.meme-inline),
+html.has-motion .home-intro-avatar {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+    transition:
+        opacity 0.6s ease,
+        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.has-motion .post-content img.is-loaded:not(.meme-inline),
+html.has-motion .md-content img.is-loaded:not(.meme-inline),
+html.has-motion .home-intro-avatar.is-loaded {
+    opacity: 1;
+    transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   进入视口时整体浮现（由 site-motion.js 添加 .js-reveal）
+   仅对首屏以下的区块启用，避免首屏闪烁。
+   -------------------------------------------------------------------------- */
+.js-reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+        opacity 0.6s ease,
+        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.js-reveal.is-inview {
+    opacity: 1;
+    transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   一言：换句时轻轻浮现
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+    .home-hitokoto blockquote.is-swapping {
+        animation: pm-quote-swap 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   主题切换按钮：图标翻转（由 site-motion.js 添加 .is-animating）
+   -------------------------------------------------------------------------- */
+.theme-toggle svg {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .theme-toggle.is-animating svg {
+        animation: pm-icon-turn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   搜索结果：逐条浮现
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+    .searchResults li {
+        animation: pm-rise-soft 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .searchResults li:nth-child(1) { animation-delay: 0.01s; }
+    .searchResults li:nth-child(2) { animation-delay: 0.04s; }
+    .searchResults li:nth-child(3) { animation-delay: 0.07s; }
+    .searchResults li:nth-child(4) { animation-delay: 0.10s; }
+    .searchResults li:nth-child(5) { animation-delay: 0.13s; }
+    .searchResults li:nth-child(6) { animation-delay: 0.16s; }
+    .searchResults li:nth-child(7) { animation-delay: 0.19s; }
+    .searchResults li:nth-child(n + 8) { animation-delay: 0.22s; }
+}
+
+/* --------------------------------------------------------------------------
+   标签 / 分享 / 翻页 / 喜欢：悬停抬升
+   -------------------------------------------------------------------------- */
+.post-tags a,
+.terms-tags a,
+.share-buttons a,
+.paginav a,
+.post-like,
+.home-friend-thumb,
+.mini-friend-thumb {
+    transition:
+        transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+    .post-tags a:hover,
+    .terms-tags a:hover {
+        transform: translateY(-2px);
+    }
+
+    .share-buttons a:hover {
+        transform: translateY(-2px) scale(1.03);
+    }
+
+    .paginav a:hover {
+        transform: translateY(-2px);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   返回顶部：滚动出现 + 悬停抬升
+   （PaperMod 用 .hidden 类控制显隐，这里只补充位移/缩放）
+   -------------------------------------------------------------------------- */
+.top-link {
+    transition:
+        visibility 0.3s,
+        opacity 0.3s cubic-bezier(0.4, 0, 1, 1),
+        transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.top-link.hidden {
+    transform: translateY(10px) scale(0.9);
+}
+
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+    .top-link:not(.hidden):hover {
+        transform: translateY(-2px) scale(1.04);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   按压反馈：点击 / 触摸通用
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+    :where(
+        .post-like,
+        .home-hitokoto-refresh,
+        .header-search button,
+        .theme-toggle,
+        .mini-menu-toggle,
+        .player-btn,
+        .player-list-btn,
+        .pagination a,
+        .post-tags a,
+        .terms-tags a,
+        .share-buttons a,
+        .top-link
+    ):active {
+        transform: scale(0.955);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   手机 / 触摸端：更明显的点按反馈
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) and (hover: none) {
+    :where(
+        .menu a,
+        .home-friend-thumb,
+        .mini-friend-thumb,
+        .home-hitokoto-refresh,
+        .isso-post-action input
+    ):active {
+        transform: scale(0.96);
+    }
+
+    .main > .first-entry:active,
+    .main > .post-entry:active {
+        transform: scale(0.994);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Isso 评论：新评论逐条浮现
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+    #isso-thread .isso-comment {
+        animation: pm-fade-soft 0.4s ease both;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   手机端：列表卡片入场略缓，避免与其它动画叠加过密
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) and (max-width: 899px) {
+    .main > .post-entry {
+        animation-duration: 0.5s;
+    }
+}
