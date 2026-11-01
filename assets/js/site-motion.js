@@ -119,4 +119,168 @@
             }, 520);
         });
     }
+
+    // ----------------------------------------------------------------------
+    // 4) 卡片集合（PC 视差 / 手机轮盘共用）
+    // ----------------------------------------------------------------------
+    const cards = Array.from(
+        document.querySelectorAll(
+            ".main > .first-entry, .main > .post-entry, .home-intro-card"
+        )
+    );
+
+    const mqDesktop = window.matchMedia(
+        "(hover: hover) and (pointer: fine) and (min-width: 900px)"
+    );
+    const mqMobile = window.matchMedia("(max-width: 899px)");
+
+    // ----------------------------------------------------------------------
+    // 4a) PC：卡片随鼠标轻微偏向（含阴影方向）
+    // ----------------------------------------------------------------------
+    const TILT_MAX = 6; // px
+
+    cards.forEach((card) => {
+        card.addEventListener(
+            "pointermove",
+            (event) => {
+                if (!mqDesktop.matches) {
+                    return;
+                }
+
+                const rect = card.getBoundingClientRect();
+
+                if (!rect.width || !rect.height) {
+                    return;
+                }
+
+                const dx = (event.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
+                const dy = (event.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
+
+                card.style.setProperty("--tilt-x", `${(dx * TILT_MAX).toFixed(2)}px`);
+                card.style.setProperty("--tilt-y", `${(dy * TILT_MAX).toFixed(2)}px`);
+            },
+            { passive: true }
+        );
+
+        card.addEventListener("pointerleave", () => {
+            card.style.setProperty("--tilt-x", "0px");
+            card.style.setProperty("--tilt-y", "0px");
+        });
+    });
+
+    // ----------------------------------------------------------------------
+    // 4b) 手机：轮盘深度 + 顶/底栏自动隐藏（顶栏与底栏方向相反）
+    // ----------------------------------------------------------------------
+    let mobileAttached = false;
+    let lastScrollY = window.scrollY || 0;
+    let scrollTicking = false;
+    let idleTimer = 0;
+
+    function wheelDepth() {
+        const vh = window.innerHeight || html.clientHeight;
+        const header = document.querySelector(".header");
+        const player = document.getElementById("site-player");
+        const headerH = header ? header.offsetHeight : 60;
+        const playerH = player && !player.hidden ? player.offsetHeight : 0;
+
+        // 上下两条“轮盘轨道”：顶栏中部与底栏中部
+        const topRail = headerH * 0.5;
+        const bottomRail = vh - playerH * 0.5;
+        const range = 200;
+
+        cards.forEach((card) => {
+            const rect = card.getBoundingClientRect();
+
+            let nearTop = 0;
+            let nearBottom = 0;
+
+            if (rect.top < topRail) {
+                nearTop = Math.min(1, (topRail - rect.top) / range);
+            }
+
+            if (rect.bottom > bottomRail) {
+                nearBottom = Math.min(1, (rect.bottom - bottomRail) / range);
+            }
+
+            const wheel = 1 - Math.max(nearTop, nearBottom);
+            card.style.setProperty("--wheel", wheel.toFixed(3));
+        });
+    }
+
+    function resetBars() {
+        html.classList.remove("is-header-hidden");
+        html.classList.remove("is-player-shown");
+    }
+
+    function updateBars() {
+        const y = window.scrollY || 0;
+
+        if (y <= 4) {
+            // 页首：顶栏显示、底栏收起
+            resetBars();
+        } else if (y > lastScrollY + 2) {
+            // 向下滚动：顶栏隐藏、底栏拉出
+            html.classList.add("is-header-hidden");
+            html.classList.add("is-player-shown");
+        } else if (y < lastScrollY - 2) {
+            // 向上滚动：顶栏复原、底栏收起
+            resetBars();
+        }
+    }
+
+    function onScroll() {
+        if (!scrollTicking) {
+            scrollTicking = true;
+            window.requestAnimationFrame(() => {
+                if (mqMobile.matches) {
+                    wheelDepth();
+                    updateBars();
+                }
+                lastScrollY = window.scrollY || 0;
+                scrollTicking = false;
+            });
+        }
+
+        window.clearTimeout(idleTimer);
+        idleTimer = window.setTimeout(() => {
+            if (mqMobile.matches) {
+                resetBars();
+            }
+        }, 700);
+    }
+
+    function enableMobile() {
+        if (mobileAttached) {
+            return;
+        }
+        mobileAttached = true;
+        window.addEventListener("scroll", onScroll, { passive: true });
+        lastScrollY = window.scrollY || 0;
+        resetBars();
+        wheelDepth();
+    }
+
+    function disableMobile() {
+        if (!mobileAttached) {
+            return;
+        }
+        mobileAttached = false;
+        window.removeEventListener("scroll", onScroll);
+        resetBars();
+        cards.forEach((card) => card.style.removeProperty("--wheel"));
+    }
+
+    if (mqMobile.matches) {
+        enableMobile();
+    }
+
+    if (mqMobile.addEventListener) {
+        mqMobile.addEventListener("change", () => {
+            if (mqMobile.matches) {
+                enableMobile();
+            } else {
+                disableMobile();
+            }
+        });
+    }
 })();

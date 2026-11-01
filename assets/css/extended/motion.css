@@ -42,15 +42,15 @@
 }
 
 /* --------------------------------------------------------------------------
-   入场：顶栏 / 播放器
+   入场：顶栏 / 播放器（仅 PC；手机端由顶/底栏自动隐藏的位移接管）
    -------------------------------------------------------------------------- */
-@media (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) and (min-width: 900px) {
     .header {
-        animation: pm-drop-soft 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+        animation: pm-drop-soft 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards;
     }
 
     .site-player:not([hidden]) {
-        animation: pm-slide-up-soft 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        animation: pm-slide-up-soft 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
     }
 }
 
@@ -242,11 +242,6 @@ html.has-motion .home-intro-avatar.is-loaded {
     ):active {
         transform: scale(0.96);
     }
-
-    .main > .first-entry:active,
-    .main > .post-entry:active {
-        transform: scale(0.994);
-    }
 }
 
 /* --------------------------------------------------------------------------
@@ -264,5 +259,119 @@ html.has-motion .home-intro-avatar.is-loaded {
 @media (prefers-reduced-motion: no-preference) and (max-width: 899px) {
     .main > .post-entry {
         animation-duration: 0.5s;
+    }
+}
+
+/* ==========================================================================
+   层次感 / 卡片交互 / 顶底栏自动隐藏
+   ========================================================================== */
+
+/* ---------- 阴影 token：更远的距离、更大的模糊，卡片与栏位更“离开”背景 ---------- */
+:root {
+    --depth-soft: rgba(46, 72, 84, 0.07);
+    --depth-hard: rgba(46, 72, 84, 0.55);
+    --depth-soft-lift: rgba(46, 72, 84, 0.055);
+    --depth-hard-lift: rgba(46, 72, 84, 0.34);
+
+    --card-shadow: 0 6px 16px var(--depth-soft),
+        0 34px 84px -28px var(--depth-hard);
+    --card-shadow-lift: 0 8px 22px var(--depth-soft-lift),
+        0 48px 104px -34px var(--depth-hard-lift);
+}
+
+:root[data-theme="dark"] {
+    --depth-soft: rgba(0, 0, 0, 0.34);
+    --depth-hard: rgba(0, 0, 0, 0.86);
+    --depth-soft-lift: rgba(0, 0, 0, 0.26);
+    --depth-hard-lift: rgba(0, 0, 0, 0.55);
+}
+
+/* 评论栏、搜索结果与卡片保持同一层次 */
+.post-comments {
+    box-shadow:
+        0 5px 14px var(--depth-soft),
+        0 36px 86px -34px var(--depth-hard);
+}
+
+.searchResults li {
+    box-shadow: 0 6px 18px -14px var(--depth-hard);
+}
+
+/* --------------------------------------------------------------------------
+   PC：卡片随鼠标轻微偏向，阴影同向偏移（由 site-motion.js 写入 --tilt-x/y）
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) and (min-width: 900px) {
+    .main > .first-entry,
+    .main > .post-entry,
+    .home-intro-card {
+        transform: translate3d(var(--tilt-x, 0px), var(--tilt-y, 0px), 0);
+        box-shadow:
+            calc(var(--tilt-x, 0px) * 0.6) calc(var(--tilt-y, 0px) * 0.6 + 6px) 16px var(--depth-soft),
+            calc(var(--tilt-x, 0px) * 1.2) calc(var(--tilt-y, 0px) * 1.2 + 34px) 84px -28px var(--depth-hard);
+        transition:
+            transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 0.3s ease,
+            background-color 0.26s ease,
+            border-color 0.26s ease;
+    }
+
+    .main > .first-entry:hover,
+    .main > .post-entry:hover {
+        transform: translate3d(var(--tilt-x, 0px), calc(var(--tilt-y, 0px) - 3px), 0);
+        box-shadow:
+            calc(var(--tilt-x, 0px) * 0.7) calc(var(--tilt-y, 0px) * 0.7 + 8px) 22px var(--depth-soft-lift),
+            calc(var(--tilt-x, 0px) * 1.4) calc(var(--tilt-y, 0px) * 1.4 + 48px) 104px -34px var(--depth-hard-lift);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   手机：轮盘深度 —— 越贴近顶栏下方 / 底栏上方，卡片越小、阴影越小越近
+   --wheel：1 = 屏幕中部；0 = 贴近栏位（由 site-motion.js 按滚动写入）
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) and (max-width: 899px) {
+    .main > .first-entry,
+    .main > .post-entry,
+    .home-intro-card {
+        --wheel: 1;
+        transform-origin: center center;
+        transform: scale(calc(0.92 + 0.08 * var(--wheel)));
+        box-shadow:
+            0 calc(2px + 4px * var(--wheel)) calc(6px + 10px * var(--wheel)) var(--depth-soft),
+            0 calc(16px + 44px * var(--wheel)) calc(38px + 66px * var(--wheel)) calc(-16px - 28px * var(--wheel)) var(--depth-hard);
+        transition:
+            transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 0.3s ease;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   手机：顶栏向下滚动隐藏、底栏反向拉出；无动作 / 向上滚动时复原
+   （默认：顶栏显示、底栏收起。类名由 site-motion.js 切换）
+   -------------------------------------------------------------------------- */
+@media (max-width: 899px) {
+    .header {
+        transform: translateY(0);
+    }
+
+    html.is-header-hidden .header {
+        transform: translateY(-100%);
+    }
+
+    .site-player {
+        transform: translateY(calc(100% + 26px));
+    }
+
+    html.is-player-shown .site-player {
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) and (max-width: 899px) {
+    .header {
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .site-player {
+        transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
     }
 }
