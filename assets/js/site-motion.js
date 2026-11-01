@@ -135,37 +135,104 @@
     const mqMobile = window.matchMedia("(max-width: 899px)");
 
     // ----------------------------------------------------------------------
-    // 4a) PC：卡片随鼠标轻微偏向（含阴影方向）
+    // 4a) PC：卡片保持不动，阴影随鼠标方位缓动偏移；鼠标离开缓慢归零
     // ----------------------------------------------------------------------
-    const TILT_MAX = 6; // px
+    const SHIFT_MAX = 16; // px，阴影相对默认位置的偏移上限
+    const depth = cards.map((card) => ({ card, curX: 0, curY: 0, tgtX: 0, tgtY: 0 }));
 
-    cards.forEach((card) => {
-        card.addEventListener(
-            "pointermove",
-            (event) => {
-                if (!mqDesktop.matches) {
-                    return;
-                }
+    let pointerX = 0;
+    let pointerY = 0;
+    let pointerActive = false;
+    let depthRAF = 0;
 
-                const rect = card.getBoundingClientRect();
+    function depthTargets() {
+        depth.forEach((item) => {
+            if (!mqDesktop.matches || !pointerActive) {
+                item.tgtX = 0;
+                item.tgtY = 0;
+                return;
+            }
 
-                if (!rect.width || !rect.height) {
-                    return;
-                }
+            const rect = item.card.getBoundingClientRect();
 
-                const dx = (event.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
-                const dy = (event.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
+            if (!rect.width || !rect.height) {
+                item.tgtX = 0;
+                item.tgtY = 0;
+                return;
+            }
 
-                card.style.setProperty("--tilt-x", `${(dx * TILT_MAX).toFixed(2)}px`);
-                card.style.setProperty("--tilt-y", `${(dy * TILT_MAX).toFixed(2)}px`);
-            },
-            { passive: true }
-        );
+            const dx = (pointerX - (rect.left + rect.width / 2)) / (rect.width / 2);
+            const dy = (pointerY - (rect.top + rect.height / 2)) / (rect.height / 2);
 
-        card.addEventListener("pointerleave", () => {
-            card.style.setProperty("--tilt-x", "0px");
-            card.style.setProperty("--tilt-y", "0px");
+            item.tgtX = Math.max(-1, Math.min(1, dx)) * SHIFT_MAX;
+            item.tgtY = Math.max(-1, Math.min(1, dy)) * SHIFT_MAX;
         });
+    }
+
+    function depthTick() {
+        depthRAF = 0;
+        depthTargets();
+
+        // 进入时较缓地加速跟随；离开或鼠标不在页面时更慢地回到默认。
+        const rate = pointerActive ? 0.08 : 0.035;
+        let moving = false;
+
+        depth.forEach((item) => {
+            item.curX += (item.tgtX - item.curX) * rate;
+            item.curY += (item.tgtY - item.curY) * rate;
+
+            if (
+                Math.abs(item.tgtX - item.curX) > 0.04 ||
+                Math.abs(item.tgtY - item.curY) > 0.04
+            ) {
+                moving = true;
+            }
+
+            item.card.style.setProperty("--sh-x", `${item.curX.toFixed(2)}px`);
+            item.card.style.setProperty("--sh-y", `${item.curY.toFixed(2)}px`);
+        });
+
+        if (moving) {
+            depthRAF = window.requestAnimationFrame(depthTick);
+        }
+    }
+
+    function ensureDepth() {
+        if (!depthRAF) {
+            depthRAF = window.requestAnimationFrame(depthTick);
+        }
+    }
+
+    document.addEventListener(
+        "pointermove",
+        (event) => {
+            if (!mqDesktop.matches) {
+                return;
+            }
+
+            pointerX = event.clientX;
+            pointerY = event.clientY;
+            pointerActive = true;
+            ensureDepth();
+        },
+        { passive: true }
+    );
+
+    // 鼠标离开窗口（relatedTarget 为空）→ 缓慢归零
+    document.addEventListener(
+        "mouseout",
+        (event) => {
+            if (!event.relatedTarget) {
+                pointerActive = false;
+                ensureDepth();
+            }
+        },
+        true
+    );
+
+    window.addEventListener("blur", () => {
+        pointerActive = false;
+        ensureDepth();
     });
 
     // ----------------------------------------------------------------------
@@ -283,4 +350,37 @@
             }
         });
     }
+
+    // ----------------------------------------------------------------------
+    // 5) 点击卡片：先快速下沉一小段，再跳转
+    // ----------------------------------------------------------------------
+    document
+        .querySelectorAll(".main > .first-entry .entry-link, .main > .post-entry .entry-link")
+        .forEach((link) => {
+            link.addEventListener("click", (event) => {
+                if (
+                    event.defaultPrevented ||
+                    event.button !== 0 ||
+                    event.metaKey ||
+                    event.ctrlKey ||
+                    event.shiftKey ||
+                    event.altKey
+                ) {
+                    return;
+                }
+
+                const card = link.closest(".first-entry, .post-entry");
+
+                if (!card || !link.href) {
+                    return;
+                }
+
+                event.preventDefault();
+                card.classList.add("is-sinking");
+
+                window.setTimeout(() => {
+                    window.location.href = link.href;
+                }, 165);
+            });
+        });
 })();

@@ -273,10 +273,10 @@ html.has-motion .home-intro-avatar.is-loaded {
     --depth-soft-lift: rgba(46, 72, 84, 0.055);
     --depth-hard-lift: rgba(46, 72, 84, 0.34);
 
-    --card-shadow: 0 6px 16px var(--depth-soft),
-        0 34px 84px -28px var(--depth-hard);
-    --card-shadow-lift: 0 8px 22px var(--depth-soft-lift),
-        0 48px 104px -34px var(--depth-hard-lift);
+    --card-shadow: 0 8px 22px var(--depth-soft),
+        0 42px 98px -30px var(--depth-hard);
+    --card-shadow-lift: 0 10px 28px var(--depth-soft-lift),
+        0 56px 116px -36px var(--depth-hard-lift);
 }
 
 :root[data-theme="dark"] {
@@ -298,29 +298,23 @@ html.has-motion .home-intro-avatar.is-loaded {
 }
 
 /* --------------------------------------------------------------------------
-   PC：卡片随鼠标轻微偏向，阴影同向偏移（由 site-motion.js 写入 --tilt-x/y）
+   PC：卡片保持不动，只让阴影随鼠标方位缓动偏移
+   --lift 表示“卡片与背景的参考距离”，阴影的偏移/模糊都由它推算；
+   --sh-x/--sh-y 由 site-motion.js 缓动写入（缓加速，离开后缓慢归零）。
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) and (min-width: 900px) {
     .main > .first-entry,
     .main > .post-entry,
     .home-intro-card {
-        transform: translate3d(var(--tilt-x, 0px), var(--tilt-y, 0px), 0);
+        --lift: 1;
+        --sh-x: 0px;
+        --sh-y: 0px;
         box-shadow:
-            calc(var(--tilt-x, 0px) * 0.6) calc(var(--tilt-y, 0px) * 0.6 + 6px) 16px var(--depth-soft),
-            calc(var(--tilt-x, 0px) * 1.2) calc(var(--tilt-y, 0px) * 1.2 + 34px) 84px -28px var(--depth-hard);
+            calc(var(--sh-x) * 0.5) calc(var(--sh-y) * 0.5 + 12px * var(--lift)) calc(26px * var(--lift)) var(--depth-soft),
+            calc(var(--sh-x) * 1.25) calc(var(--sh-y) * 1.25 + 52px * var(--lift)) calc(120px * var(--lift)) calc(-34px * var(--lift)) var(--depth-hard);
         transition:
-            transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-            box-shadow 0.3s ease,
             background-color 0.26s ease,
             border-color 0.26s ease;
-    }
-
-    .main > .first-entry:hover,
-    .main > .post-entry:hover {
-        transform: translate3d(var(--tilt-x, 0px), calc(var(--tilt-y, 0px) - 3px), 0);
-        box-shadow:
-            calc(var(--tilt-x, 0px) * 0.7) calc(var(--tilt-y, 0px) * 0.7 + 8px) 22px var(--depth-soft-lift),
-            calc(var(--tilt-x, 0px) * 1.4) calc(var(--tilt-y, 0px) * 1.4 + 48px) 104px -34px var(--depth-hard-lift);
     }
 }
 
@@ -373,5 +367,64 @@ html.has-motion .home-intro-avatar.is-loaded {
 
     .site-player {
         transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+}
+
+/* ==========================================================================
+   渐暗：背景四周 + 顶栏 / 底栏附近，凸显层次与距离
+   ========================================================================== */
+
+:root {
+    --vignette: rgba(46, 72, 84, 0.16);
+    --vignette-strong: rgba(46, 72, 84, 0.26);
+}
+
+:root[data-theme="dark"] {
+    --vignette: rgba(0, 0, 0, 0.42);
+    --vignette-strong: rgba(0, 0, 0, 0.6);
+}
+
+/* 只压暗背景（在内容之下、粒子之上），让卡片像浮在更深的空间里 */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(132% 122% at 50% 42%, transparent 54%, var(--vignette) 100%),
+        linear-gradient(180deg, var(--vignette-strong), transparent 120px),
+        linear-gradient(0deg, var(--vignette-strong), transparent 180px);
+}
+
+/* 顶栏下方、播放器上方再压一层暗，进一步拉开与内容的关系 */
+.header {
+    box-shadow:
+        0 1px 0 var(--border),
+        0 20px 44px -28px rgba(46, 72, 84, 0.75);
+}
+
+:root[data-theme="dark"] .header {
+    box-shadow:
+        0 1px 0 var(--border),
+        0 20px 44px -26px rgba(0, 0, 0, 0.92);
+}
+
+.site-player {
+    box-shadow: 0 -26px 60px -36px rgba(46, 72, 84, 0.75);
+}
+
+:root[data-theme="dark"] .site-player {
+    box-shadow: 0 -26px 60px -34px rgba(0, 0, 0, 0.95);
+}
+
+/* ==========================================================================
+   点击卡片：快速下沉一小段，再跳转（由 site-motion.js 触发 .is-sinking）
+   ========================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+    .main > .first-entry.is-sinking,
+    .main > .post-entry.is-sinking {
+        transform: translateY(7px) scale(0.994);
+        transition: transform 0.16s cubic-bezier(0.4, 0, 1, 1);
     }
 }
