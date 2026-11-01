@@ -2,7 +2,12 @@ baseURL = 'http://8.134.185.227/'
 locale = 'zh-cn'
 title = '镜子的小窝UvU'
 theme = 'PaperMod'
-unsafe = true
+
+# 允许正文里的原始 HTML（表情包替换等依赖它）；
+# hardWraps 让 Markdown 里的单个换行也渲染成 <br>，避免日记挤成一段。
+[markup.goldmark.renderer]
+  unsafe = true
+  hardWraps = true
 
 [params]
   comments = true

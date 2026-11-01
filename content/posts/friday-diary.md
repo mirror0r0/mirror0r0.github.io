@@ -3,6 +3,7 @@ date = '2026-10-22T18:50:23+08:00'
 draft = false
 title = '星期五日记'
 subtitle = '万恶的华莱士又一次让我哼啊啊啊啊啊'
+aliases = ['/posts/post---副本/']
 +++
 
 ### 早上/\*敲头\*/

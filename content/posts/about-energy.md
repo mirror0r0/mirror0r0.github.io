@@ -3,6 +3,7 @@ date = '2026-10-25T18:50:23+08:00'
 draft = false
 title = '关于精力'
 subtitle = '不好好睡觉只会让自己没办法集中注意力'
+aliases = ['/posts/post---副本-2/']
 +++
 
 

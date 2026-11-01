@@ -11,3 +11,7 @@ hugo.linux
 
 # Temporary lock file while building
 /.hugo_build.lock
+
+# 大体积媒体资源：只保留在本地与服务器 web root，不进 git 历史
+/static/meme/
+/deta2/
