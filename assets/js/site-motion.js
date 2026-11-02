@@ -204,6 +204,71 @@
         }
     }
 
+    // ----------------------------------------------------------------------
+    // 4a-2) 鼠标阴影：点光源在鼠标“正上方”，按下方所在层改变大小 / 软硬
+    // ----------------------------------------------------------------------
+    const cursorShadow = document.createElement("div");
+    cursorShadow.id = "cursor-shadow";
+    cursorShadow.setAttribute("aria-hidden", "true");
+    cursorShadow.appendChild(document.createElement("i"));
+    document.body.appendChild(cursorShadow);
+
+    const CARD_SELECTOR = [
+        ".first-entry", ".post-entry", ".home-intro-card", ".entry-link",
+        ".post-single", ".post-content", ".post-comments", ".toc",
+        ".searchResults", ".mini-menu-panel", ".player-playlist",
+        ".post-engagement", ".post-tags", ".paginav", ".footer"
+    ].join(",");
+    const BAR_SELECTOR = ".header, #site-player, .site-player";
+
+    let cursorOn = false;
+    let lastLayerCheck = 0;
+
+    function cursorLayerAt(x, y) {
+        const el = document.elementFromPoint(x, y);
+
+        if (!el) {
+            return "bg";
+        }
+
+        if (el.closest(BAR_SELECTOR)) {
+            return "bar";
+        }
+
+        if (el.closest(CARD_SELECTOR)) {
+            return "card";
+        }
+
+        return "bg";
+    }
+
+    function updateCursorShadow(x, y, now) {
+        if (!mqDesktop.matches) {
+            return;
+        }
+
+        cursorShadow.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+
+        if (!cursorOn) {
+            cursorOn = true;
+            cursorShadow.classList.add("is-on");
+        }
+
+        // 层探测略微节流，避免每次移动都做命中测试。
+        if (now - lastLayerCheck > 70) {
+            lastLayerCheck = now;
+            const layer = cursorLayerAt(x, y);
+            cursorShadow.classList.toggle("layer-bg", layer === "bg");
+            cursorShadow.classList.toggle("layer-card", layer === "card");
+            cursorShadow.classList.toggle("layer-bar", layer === "bar");
+        }
+    }
+
+    function hideCursorShadow() {
+        cursorOn = false;
+        cursorShadow.classList.remove("is-on");
+    }
+
     document.addEventListener(
         "pointermove",
         (event) => {
@@ -215,17 +280,19 @@
             pointerY = event.clientY;
             pointerActive = true;
             ensureDepth();
+            updateCursorShadow(event.clientX, event.clientY, event.timeStamp || 0);
         },
         { passive: true }
     );
 
-    // 鼠标离开窗口（relatedTarget 为空）→ 缓慢归零
+    // 鼠标离开窗口（relatedTarget 为空）→ 阴影归零并收起
     document.addEventListener(
         "mouseout",
         (event) => {
             if (!event.relatedTarget) {
                 pointerActive = false;
                 ensureDepth();
+                hideCursorShadow();
             }
         },
         true
@@ -234,6 +301,7 @@
     window.addEventListener("blur", () => {
         pointerActive = false;
         ensureDepth();
+        hideCursorShadow();
     });
 
     // ----------------------------------------------------------------------

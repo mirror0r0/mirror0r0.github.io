@@ -435,3 +435,78 @@ body::after {
         transition: transform 0.16s cubic-bezier(0.4, 0, 1, 1);
     }
 }
+
+/* ==========================================================================
+   鼠标阴影（点光源）
+   两盏假想灯：
+   - 范围光：负责边缘渐暗（body::after）与卡片浅泛阴影（--depth-*）；
+   - 点光源：位于鼠标“正上方”（垂直屏幕、更靠外一层），由它给鼠标投影。
+   鼠标高于卡片、略高于顶栏；到下方各层的距离不同，故阴影大小/软硬不同：
+     背景（最低，最远）> 卡片 > 顶/底栏（最近）。
+   ========================================================================== */
+
+:root {
+    /* 点光源色调：以屏幕空间“更靠外”的一层来理解 */
+    --cs-c: 16, 26, 32;
+}
+
+:root[data-theme="dark"] {
+    --cs-c: 0, 0, 0;
+}
+
+#cursor-shadow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1300; /* 位于顶栏(1000)、播放器(950)之上：鼠标本就在它们之上 */
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: none;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 900px) {
+    #cursor-shadow {
+        display: block;
+    }
+}
+
+#cursor-shadow.is-on {
+    opacity: 1;
+}
+
+#cursor-shadow > i {
+    position: absolute;
+    left: 4px;
+    top: 15px; /* 点光源在正上方，阴影落在光标下方并略微偏右，更像投影 */
+    width: var(--cs-size, 40px);
+    height: var(--cs-size, 40px);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(var(--cs-c), var(--cs-alpha, 0.3)) 0%, transparent 70%);
+    filter: blur(var(--cs-blur, 12px));
+    transition:
+        width 0.28s ease,
+        height 0.28s ease,
+        filter 0.28s ease,
+        background 0.28s ease;
+}
+
+/* 层高：背景最低 → 阴影最大最软；卡片次之；顶/底栏最近 → 最小最实 */
+#cursor-shadow.layer-bg > i {
+    --cs-size: 60px;
+    --cs-blur: 22px;
+    --cs-alpha: 0.24;
+}
+
+#cursor-shadow.layer-card > i {
+    --cs-size: 34px;
+    --cs-blur: 12px;
+    --cs-alpha: 0.30;
+}
+
+#cursor-shadow.layer-bar > i {
+    --cs-size: 24px;
+    --cs-blur: 7px;
+    --cs-alpha: 0.32;
+}
