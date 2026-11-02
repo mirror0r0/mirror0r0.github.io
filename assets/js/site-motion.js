@@ -137,7 +137,7 @@
     // ----------------------------------------------------------------------
     // 4a) PC：卡片保持不动，阴影随鼠标方位缓动偏移；鼠标离开缓慢归零
     // ----------------------------------------------------------------------
-    const SHIFT_MAX = 16; // px，阴影相对默认位置的偏移上限
+    const SHIFT_MAX = 20; // px，阴影相对默认位置的偏移上限
     const depth = cards.map((card) => ({ card, curX: 0, curY: 0, tgtX: 0, tgtY: 0 }));
 
     let pointerX = 0;
@@ -164,8 +164,9 @@
             const dx = (pointerX - (rect.left + rect.width / 2)) / (rect.width / 2);
             const dy = (pointerY - (rect.top + rect.height / 2)) / (rect.height / 2);
 
-            item.tgtX = Math.max(-1, Math.min(1, dx)) * SHIFT_MAX;
-            item.tgtY = Math.max(-1, Math.min(1, dy)) * SHIFT_MAX;
+            // 阴影朝鼠标方向的相反方向偏移
+            item.tgtX = Math.max(-1, Math.min(1, dx)) * -SHIFT_MAX;
+            item.tgtY = Math.max(-1, Math.min(1, dy)) * -SHIFT_MAX;
         });
     }
 
