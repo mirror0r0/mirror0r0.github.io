@@ -223,3 +223,109 @@
         radial-gradient(1.3px 1.3px at 82% 72%, rgba(235, 0, 149, 0.7), transparent),
         radial-gradient(1.1px 1.1px at 54% 84%, rgba(255, 255, 255, 0.5), transparent);
 }
+
+/* --------------------------------------------------------------------------
+   背景插画（高透明、隐约可见）+ 原版风格像素贴图纹理
+   #skin-decor::before = 插画；::after = 像素母题铺底（心/星/黑桃/方块）
+   -------------------------------------------------------------------------- */
+#skin-decor::before,
+#skin-decor::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+#skin-decor::before {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+#skin-decor::after {
+    background-repeat: repeat;
+    -webkit-mask-image: radial-gradient(125% 125% at 50% 38%, #000 18%, transparent 84%);
+    mask-image: radial-gradient(125% 125% at 50% 38%, #000 18%, transparent 84%);
+}
+
+/* 暗色主题：白/青像素母题 */
+:root[data-skin="deltarune"][data-theme="dark"] #skin-decor::after {
+    opacity: 0.07;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 6' shape-rendering='crispEdges'%3E%3Cg fill='%23FFFFFF'%3E%3Crect x='1' y='0' width='2' height='1'/%3E%3Crect x='4' y='0' width='2' height='1'/%3E%3Crect x='0' y='1' width='7' height='1'/%3E%3Crect x='0' y='2' width='7' height='1'/%3E%3Crect x='1' y='3' width='5' height='1'/%3E%3Crect x='2' y='4' width='3' height='1'/%3E%3Crect x='3' y='5' width='1' height='1'/%3E%3C/g%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 8L58 42L92 50L58 58L50 92L42 58L8 50L42 42Z' fill='%23FFFFFF'/%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 10' shape-rendering='crispEdges'%3E%3Cg fill='%23FFFFFF'%3E%3Crect x='4' y='0' width='1' height='1'/%3E%3Crect x='3' y='1' width='3' height='1'/%3E%3Crect x='2' y='2' width='5' height='1'/%3E%3Crect x='1' y='3' width='7' height='1'/%3E%3Crect x='0' y='4' width='9' height='1'/%3E%3Crect x='0' y='5' width='9' height='1'/%3E%3Crect x='0' y='6' width='4' height='1'/%3E%3Crect x='5' y='6' width='4' height='1'/%3E%3Crect x='1' y='7' width='3' height='1'/%3E%3Crect x='5' y='7' width='3' height='1'/%3E%3Crect x='4' y='8' width='1' height='1'/%3E%3Crect x='3' y='9' width='3' height='1'/%3E%3C/g%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7' shape-rendering='crispEdges'%3E%3Cg fill='%23FFFFFF'%3E%3Crect x='3' y='0' width='1' height='1'/%3E%3Crect x='2' y='1' width='3' height='1'/%3E%3Crect x='1' y='2' width='5' height='1'/%3E%3Crect x='0' y='3' width='7' height='1'/%3E%3Crect x='1' y='4' width='5' height='1'/%3E%3Crect x='2' y='5' width='3' height='1'/%3E%3Crect x='3' y='6' width='1' height='1'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 26px 22px, 46px 46px, 34px 38px, 30px 30px;
+    background-position: 18px 26px, 130px 92px, 300px 214px, 470px 342px;
+}
+
+/* 亮色主题：褐墨像素母题 */
+:root[data-skin="deltarune"][data-theme="light"] #skin-decor::after {
+    opacity: 0.085;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 6' shape-rendering='crispEdges'%3E%3Cg fill='%233A2E38'%3E%3Crect x='1' y='0' width='2' height='1'/%3E%3Crect x='4' y='0' width='2' height='1'/%3E%3Crect x='0' y='1' width='7' height='1'/%3E%3Crect x='0' y='2' width='7' height='1'/%3E%3Crect x='1' y='3' width='5' height='1'/%3E%3Crect x='2' y='4' width='3' height='1'/%3E%3Crect x='3' y='5' width='1' height='1'/%3E%3C/g%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 8L58 42L92 50L58 58L50 92L42 58L8 50L42 42Z' fill='%233A2E38'/%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 10' shape-rendering='crispEdges'%3E%3Cg fill='%233A2E38'%3E%3Crect x='4' y='0' width='1' height='1'/%3E%3Crect x='3' y='1' width='3' height='1'/%3E%3Crect x='2' y='2' width='5' height='1'/%3E%3Crect x='1' y='3' width='7' height='1'/%3E%3Crect x='0' y='4' width='9' height='1'/%3E%3Crect x='0' y='5' width='9' height='1'/%3E%3Crect x='0' y='6' width='4' height='1'/%3E%3Crect x='5' y='6' width='4' height='1'/%3E%3Crect x='1' y='7' width='3' height='1'/%3E%3Crect x='5' y='7' width='3' height='1'/%3E%3Crect x='4' y='8' width='1' height='1'/%3E%3Crect x='3' y='9' width='3' height='1'/%3E%3C/g%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7' shape-rendering='crispEdges'%3E%3Cg fill='%233A2E38'%3E%3Crect x='3' y='0' width='1' height='1'/%3E%3Crect x='2' y='1' width='3' height='1'/%3E%3Crect x='1' y='2' width='5' height='1'/%3E%3Crect x='0' y='3' width='7' height='1'/%3E%3Crect x='1' y='4' width='5' height='1'/%3E%3Crect x='2' y='5' width='3' height='1'/%3E%3Crect x='3' y='6' width='1' height='1'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 26px 22px, 46px 46px, 34px 38px, 30px 30px;
+    background-position: 18px 26px, 130px 92px, 300px 214px, 470px 342px;
+}
+
+/* 手机端背景插画 */
+@media (max-width: 899px) {
+    :root[data-skin="deltarune"][data-theme="light"][data-page="home"] #skin-decor::before {
+        background-image: url("/deltarune/art/home-mobile-light.jpg");
+        opacity: 0.18;
+    }
+
+    :root[data-skin="deltarune"][data-theme="dark"][data-page="home"] #skin-decor::before {
+        background-image: url("/deltarune/art/home-mobile-dark.jpg");
+        opacity: 0.26;
+    }
+
+    :root[data-skin="deltarune"][data-theme="light"][data-page="about"] #skin-decor::before {
+        background-image: url("/deltarune/art/about-mobile-light.jpg");
+        opacity: 0.18;
+    }
+
+    :root[data-skin="deltarune"][data-theme="dark"][data-page="about"] #skin-decor::before {
+        background-image: url("/deltarune/art/about-dark.jpg");
+        opacity: 0.26;
+    }
+}
+
+/* 电脑端背景插画（首页亮/暗各两张交替） */
+@media (min-width: 900px) {
+    :root[data-skin="deltarune"][data-theme="light"][data-page="home"][data-art="a"] #skin-decor::before {
+        background-image: url("/deltarune/art/home-desktop-light-a.jpg");
+        opacity: 0.16;
+    }
+
+    :root[data-skin="deltarune"][data-theme="light"][data-page="home"][data-art="b"] #skin-decor::before {
+        background-image: url("/deltarune/art/home-desktop-light-b.jpg");
+        opacity: 0.16;
+    }
+
+    :root[data-skin="deltarune"][data-theme="dark"][data-page="home"][data-art="a"] #skin-decor::before {
+        background-image: url("/deltarune/art/home-desktop-dark-a.jpg");
+        opacity: 0.24;
+    }
+
+    :root[data-skin="deltarune"][data-theme="dark"][data-page="home"][data-art="b"] #skin-decor::before {
+        background-image: url("/deltarune/art/home-desktop-dark-b.jpg");
+        opacity: 0.24;
+    }
+
+    :root[data-skin="deltarune"][data-theme="light"][data-page="about"] #skin-decor::before {
+        background-image: url("/deltarune/art/about-desktop-light.jpg");
+        opacity: 0.16;
+    }
+
+    :root[data-skin="deltarune"][data-theme="dark"][data-page="about"] #skin-decor::before {
+        background-image: url("/deltarune/art/about-dark.jpg");
+        opacity: 0.26;
+    }
+}

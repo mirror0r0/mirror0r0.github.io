@@ -67,6 +67,34 @@
         document.body.appendChild(decor);
     }
 
+    // 页面类型（首页 / 关于页 / 其它）与插画交替序号，供皮肤 CSS 选择背景插画。
+    function pageKind() {
+        const path = window.location.pathname.replace(/\/+$/, "") || "/";
+
+        if (path === "/") {
+            return "home";
+        }
+
+        if (path === "/about") {
+            return "about";
+        }
+
+        return "other";
+    }
+
+    function nextArtSlot() {
+        try {
+            const seq = (Number(sessionStorage.getItem("papermod-art-seq")) || 0) + 1;
+            sessionStorage.setItem("papermod-art-seq", String(seq));
+            return seq % 2 === 0 ? "b" : "a";
+        } catch (error) {
+            return "a";
+        }
+    }
+
+    html.dataset.page = pageKind();
+    html.dataset.art = nextArtSlot();
+
     // ----------------------------------------------------------------------
     // 界面音效（可选）
     // ----------------------------------------------------------------------
