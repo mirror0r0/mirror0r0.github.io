@@ -1,0 +1,21 @@
+{{- /*
+    自定义 <head> 扩展：
+    - 在首帧之前把本地保存的皮肤写回 <html data-skin>，避免刷新时闪烁；
+    - 预载 Deltarune 皮肤用到的像素字体（只有该皮肤会用到，故用低优先级预载）。
+    PaperMod 会在 head 末尾（主题初始化脚本之后）调用本 partial。
+*/ -}}
+
+{{- $skins := slice "blue" "deltarune" -}}
+<script>
+    (function () {
+        var allowed = {{ $skins | jsonify | safeJS }};
+        try {
+            var saved = localStorage.getItem("pref-skin");
+            document.documentElement.dataset.skin = allowed.indexOf(saved) >= 0 ? saved : "blue";
+        } catch (error) {
+            document.documentElement.dataset.skin = "blue";
+        }
+    })();
+</script>
+
+<link rel="preload" href="{{ "fonts/determination-mono.woff" | relURL }}" as="font" type="font/woff" crossorigin="anonymous">

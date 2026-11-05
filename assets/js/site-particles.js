@@ -842,7 +842,7 @@
         }
     }).observe(html, {
         attributes: true,
-        attributeFilter: ["data-theme"]
+        attributeFilter: ["data-theme", "data-skin"]
     });
 
     window.addEventListener("resize", () => {

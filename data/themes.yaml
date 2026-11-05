@@ -1,0 +1,13 @@
+# 全站主题（skin）注册表。
+# 每个皮肤都自带亮色与暗色两套配色，见 assets/css/extended/。
+# id 必须与 html[data-skin] 的取值、以及 localStorage["pref-skin"] 的取值一致。
+# swatch 用于顶栏菜单里的小色块预览（两个色）。
+- id: blue
+  name: 默认蓝调
+  description: 本站原本的潮汐蓝
+  swatch: ["#8AAEBD", "#E5D8D0"]
+
+- id: deltarune
+  name: DELTARUNE
+  description: 光世界 / 暗世界
+  swatch: ["#FFCE32", "#EB0095"]

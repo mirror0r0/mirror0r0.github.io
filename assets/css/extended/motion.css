@@ -268,11 +268,11 @@ html.has-motion .home-intro-avatar.is-loaded {
 
 /* ---------- 阴影 token：更远的距离、更大的模糊，卡片与栏位更“离开”背景 ---------- */
 :root {
-    --depth-soft: rgba(46, 72, 84, 0.09);
-    --depth-hard: rgba(46, 72, 84, 0.5);
-    --depth-far: rgba(46, 72, 84, 0.28);
-    --depth-soft-lift: rgba(46, 72, 84, 0.055);
-    --depth-hard-lift: rgba(46, 72, 84, 0.34);
+    --depth-soft: color-mix(in srgb, var(--ink) 9%, transparent);
+    --depth-hard: color-mix(in srgb, var(--ink) 50%, transparent);
+    --depth-far: color-mix(in srgb, var(--ink) 28%, transparent);
+    --depth-soft-lift: color-mix(in srgb, var(--ink) 5.5%, transparent);
+    --depth-hard-lift: color-mix(in srgb, var(--ink) 34%, transparent);
 
     --card-shadow: 0 12px 26px -6px var(--depth-soft),
         0 60px 120px -28px var(--depth-hard),
@@ -380,8 +380,8 @@ html.has-motion .home-intro-avatar.is-loaded {
    ========================================================================== */
 
 :root {
-    --vignette: rgba(46, 72, 84, 0.2);
-    --vignette-strong: rgba(46, 72, 84, 0.32);
+    --vignette: color-mix(in srgb, var(--ink) 20%, transparent);
+    --vignette-strong: color-mix(in srgb, var(--ink) 32%, transparent);
 }
 
 :root[data-theme="dark"] {
@@ -408,7 +408,7 @@ body::after {
 .header {
     box-shadow:
         0 1px 0 var(--border),
-        0 20px 44px -28px rgba(46, 72, 84, 0.75);
+        0 20px 44px -28px color-mix(in srgb, var(--ink) 75%, transparent);
 }
 
 :root[data-theme="dark"] .header {
@@ -418,7 +418,7 @@ body::after {
 }
 
 .site-player {
-    box-shadow: 0 -26px 60px -36px rgba(46, 72, 84, 0.75);
+    box-shadow: 0 -26px 60px -36px color-mix(in srgb, var(--ink) 75%, transparent);
 }
 
 :root[data-theme="dark"] .site-player {

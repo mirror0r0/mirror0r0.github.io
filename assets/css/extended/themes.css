@@ -1,0 +1,335 @@
+/* ==========================================================================
+   主题切换器 + 首页推荐歌曲条
+   与皮肤无关的通用样式；具体配色由各皮肤变量（--blue-* / --ink / --accent…）驱动。
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   顶栏：皮肤选择按钮 + 下拉菜单
+   -------------------------------------------------------------------------- */
+.skin-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    align-self: center;
+}
+
+.skin-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    color: var(--secondary);
+    border-radius: 50%;
+    transition: color 0.2s ease, background-color 0.2s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skin-toggle svg {
+    width: 18px;
+    height: 18px;
+}
+
+.skin-toggle:hover {
+    color: var(--primary);
+    background: var(--soft);
+}
+
+.skin-switch.is-open .skin-toggle {
+    color: var(--link-strong);
+    background: var(--soft);
+}
+
+.skin-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 1200;
+    display: flex;
+    flex-direction: column;
+    width: min(270px, calc(100vw - 24px));
+    padding: 8px;
+    color: var(--secondary);
+    background: var(--entry);
+    background: color-mix(in srgb, var(--entry) 97%, transparent);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow:
+        0 2px 6px color-mix(in srgb, var(--ink) 6%, transparent),
+        0 26px 58px -30px color-mix(in srgb, var(--ink) 48%, transparent);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.skin-menu[hidden] {
+    display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .skin-menu:not([hidden]) {
+        animation: pm-skin-menu-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+}
+
+@keyframes pm-skin-menu-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.skin-option {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    padding: 9px 10px;
+    color: var(--secondary);
+    text-align: left;
+    border-radius: 11px;
+    transition: color 0.18s ease, background-color 0.18s ease;
+}
+
+.skin-option:hover,
+.skin-option:focus-visible {
+    color: var(--primary);
+    background: var(--soft);
+}
+
+.skin-swatch {
+    width: 26px;
+    height: 26px;
+    flex: none;
+    background: linear-gradient(135deg, var(--swatch-a, var(--blue-1)), var(--swatch-b, var(--soft)));
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--entry) 40%, transparent);
+}
+
+.skin-option-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 1px;
+}
+
+.skin-option-name {
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.skin-option-desc {
+    color: var(--secondary);
+    font-size: 10px;
+    line-height: 1.35;
+    opacity: 0.85;
+}
+
+.skin-option-check {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    margin-inline-start: auto;
+    color: var(--link-strong);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.18s ease, transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skin-option[aria-checked="true"] .skin-option-check {
+    opacity: 1;
+    transform: none;
+}
+
+.skin-option[aria-checked="true"] .skin-option-name {
+    color: var(--link-strong);
+}
+
+.skin-menu-foot {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+}
+
+.skin-menu-foot[hidden] {
+    display: none;
+}
+
+.skin-option-toggle .skin-option-name {
+    font-size: 12px;
+}
+
+@media (max-width: 899px) {
+    .skin-menu {
+        top: calc(100% + 6px);
+    }
+
+    .skin-toggle {
+        width: 36px;
+        height: 36px;
+        min-height: 36px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   首页卡片：推荐歌曲条（替代摘要文本）
+   需要盖在整卡链接 .entry-link (z-index:2) 之上，故用更高的特异性确保 z-index:3。
+   -------------------------------------------------------------------------- */
+.main > .first-entry > .entry-song.entry-song,
+.main > .post-entry > .entry-song.entry-song {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin: 12px 0 18px;
+    padding: 8px 12px 8px 9px;
+    background: color-mix(in srgb, var(--soft) 72%, transparent);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    transition: background-color 0.22s ease, border-color 0.22s ease;
+}
+
+.main > .first-entry > .entry-song.entry-song {
+    margin: 14px 0 22px;
+    padding: 10px 14px 10px 10px;
+    border-radius: 16px;
+}
+
+@media (hover: hover) {
+    .entry-song:hover {
+        background: color-mix(in srgb, var(--soft) 100%, transparent);
+        border-color: color-mix(in srgb, var(--blue-1) 46%, transparent);
+    }
+}
+
+.entry-song-play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex: none;
+    padding: 0;
+    color: var(--on-strong);
+    background: var(--blue-1);
+    border-radius: 50%;
+    box-shadow: 0 6px 16px -10px color-mix(in srgb, var(--ink) 60%, transparent);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.main > .first-entry .entry-song-play {
+    width: 38px;
+    height: 38px;
+}
+
+.entry-song-play:hover {
+    background: var(--blue-2);
+    transform: translateY(-1px);
+}
+
+.entry-song-play svg {
+    width: 15px;
+    height: 15px;
+}
+
+.entry-song-play .ic-pause {
+    display: none;
+}
+
+.entry-song.is-playing .entry-song-play .ic-play {
+    display: none;
+}
+
+.entry-song.is-playing .entry-song-play .ic-pause {
+    display: block;
+}
+
+.entry-song-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 1px;
+    flex: 1 1 auto;
+}
+
+.entry-song-label {
+    color: var(--link-strong);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.entry-song-title {
+    overflow: hidden;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.entry-song-artist {
+    overflow: hidden;
+    color: var(--secondary);
+    font-size: 11px;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.entry-song-note {
+    flex: none;
+    max-width: 40%;
+    overflow: hidden;
+    padding: 3px 9px;
+    color: var(--secondary);
+    font-size: 10px;
+    line-height: 1.3;
+    background: color-mix(in srgb, var(--entry) 55%, transparent);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+    .entry-song-note {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .entry-song-play:hover {
+        transform: none;
+    }
+}
+
+/* 卡片触发播放时，底部播放器轻微闪烁以提示位置 */
+@keyframes pm-player-ping {
+    0% {
+        box-shadow: 0 -24px 58px -38px color-mix(in srgb, var(--blue-1) 0%, transparent);
+    }
+    35% {
+        box-shadow: 0 -22px 62px -24px color-mix(in srgb, var(--blue-1) 72%, transparent);
+    }
+    100% {
+        box-shadow: 0 -24px 58px -38px color-mix(in srgb, var(--ink) 62%, transparent);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .site-player.is-ping {
+        animation: pm-player-ping 0.9s ease;
+    }
+}

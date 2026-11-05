@@ -32,6 +32,54 @@
             {{- $lsenabled := (or (not site.Params.disableThemeToggle) (and (not site.Params.disableLangToggle) (hugo.IsMultilingual))) }}
             {{- if $lsenabled }}
             <div class="logo-switches">
+                {{- $skins := hugo.Data.themes | default slice }}
+                {{- if gt (len $skins) 1 }}
+                <div class="skin-switch" data-skin-switch data-sfx-src="{{ "deltarune/select.ogg" | relURL }}">
+                    <button id="skin-toggle" class="skin-toggle" type="button"
+                        aria-haspopup="true" aria-expanded="false" aria-controls="skin-menu"
+                        aria-label="切换主题与氛围" title="切换主题">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 3a9 9 0 0 0 0 18h1.6a2.4 2.4 0 0 0 0-4.8H13a2.2 2.2 0 0 1 0-4.4h3.9A4.1 4.1 0 0 0 21 7.7 4.7 4.7 0 0 0 16.3 3Z"/>
+                            <circle cx="7.6" cy="11" r="1.15" fill="currentColor" stroke="none"/>
+                            <circle cx="11.6" cy="7.6" r="1.15" fill="currentColor" stroke="none"/>
+                            <circle cx="16" cy="11" r="1.15" fill="currentColor" stroke="none"/>
+                        </svg>
+                    </button>
+                    <div id="skin-menu" class="skin-menu" data-skin-menu role="menu" aria-label="选择主题" hidden>
+                        {{- range $skins }}
+                        <button class="skin-option" role="menuitemradio" type="button"
+                            aria-checked="false" data-skin-option="{{ .id }}">
+                            <span class="skin-swatch" aria-hidden="true"
+                                style="--swatch-a: {{ index .swatch 0 }}; --swatch-b: {{ index .swatch 1 }};"></span>
+                            <span class="skin-option-text">
+                                <span class="skin-option-name">{{ .name }}</span>
+                                <span class="skin-option-desc">{{ .description }}</span>
+                            </span>
+                            <svg class="skin-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="m5 12 5 5L20 7"/>
+                            </svg>
+                        </button>
+                        {{- end }}
+                        <div class="skin-menu-foot" data-ambience-item hidden>
+                            <button class="skin-option skin-option-toggle" role="menuitemcheckbox" type="button"
+                                aria-checked="false" data-ambience-toggle>
+                                <span class="skin-option-text">
+                                    <span class="skin-option-name" data-ambience-name>界面音效</span>
+                                    <span class="skin-option-desc" data-ambience-desc>切换主题时的提示音（默认关闭）</span>
+                                </span>
+                                <svg class="skin-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="m5 12 5 5L20 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {{- end }}
+
                 {{- if (not site.Params.disableThemeToggle) }}
                 <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"

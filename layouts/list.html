@@ -81,7 +81,10 @@
   </header>
   {{- $subtitle := .Params.subtitle | default .Description | default "生活日志" }}
   <p class="entry-subtitle">{{ $subtitle | plainify }}</p>
-  {{- if (ne (.Param "hideSummary") true) }}
+  {{- $song := partial "post-song.html" . }}
+  {{- if $song }}
+  {{- $song | safeHTML }}
+  {{- else if (ne (.Param "hideSummary") true) }}
   <div class="entry-content">
     <p>{{ .Summary | plainify | htmlUnescape }}{{ if .Truncated }}...{{ end }}</p>
   </div>

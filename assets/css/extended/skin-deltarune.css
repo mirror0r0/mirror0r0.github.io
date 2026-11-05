@@ -1,0 +1,225 @@
+/* ==========================================================================
+   DELTARUNE 皮肤
+   亮色 = 光世界（Hometown 白天：暖调、怀旧、金色点缀）
+   暗色 = 暗世界（深靛蓝 + 霓虹品红/青/金）
+   母题为原创 SVG；氛围音取自本地游戏文件（见 site-theme.js）。
+   选择器特异性高于 :root[...]，因此与文件拼接顺序无关。
+   ========================================================================== */
+
+@font-face {
+    font-family: "Determination Mono";
+    src: url("/fonts/determination-mono.woff") format("woff");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --font-pixel: "Determination Mono", ui-monospace, Menlo, Consolas, "PingFang SC", "Microsoft YaHei", monospace;
+}
+
+/* --------------------------------------------------------------------------
+   光世界（亮色）
+   -------------------------------------------------------------------------- */
+:root[data-skin="deltarune"] {
+    --blue-1: #D98A3D;
+    --blue-2: #E8B978;
+    --blue-3: #F1DDBC;
+    --blue-4: #F4ECDD;
+    --accent: #FFCE32;
+
+    --theme: #F4ECDD;
+    --entry: #FBF6EC;
+    --primary: #3A2E38;
+    --secondary: #6E5F63;
+    --tertiary: #E4D3B8;
+    --content: #463A42;
+    --code-block-bg: #2A2233;
+    --code-bg: #EFE4D2;
+    --border: rgba(176, 140, 72, 0.34);
+
+    --link: #A9552B;
+    --link-strong: #7E3D1E;
+    --soft: #EADFC6;
+    --soft-hover: #E0D0AE;
+    --on-accent: #3A2E38;
+    --on-strong: #3A2E38;
+
+    --ink: #4A3728;
+    --ink-deep: #3A2A20;
+    --ink-deep-2: #4A3728;
+    --ink-deep-3: #46352A;
+    --ink-deeper: #2A1F17;
+    --ink-deeper-2: #241A13;
+
+    --card-sheen: rgba(255, 255, 255, 0.55);
+    --card-panel: rgba(251, 246, 236, 0.60);
+    --card-panel-hover: rgba(255, 252, 246, 0.72);
+    --quote-bg: rgba(232, 185, 120, 0.20);
+    --particle-dot: rgba(217, 138, 61, 0.34);
+    --particle-active: rgba(169, 85, 43, 0.82);
+    --particle-glow: rgba(255, 206, 50, 0.22);
+    --buffer-track: rgba(232, 185, 120, 0.60);
+
+    --vignette: rgba(120, 86, 40, 0.16);
+    --vignette-strong: rgba(120, 86, 40, 0.26);
+
+    color-scheme: light;
+}
+
+/* --------------------------------------------------------------------------
+   暗世界（暗色）
+   -------------------------------------------------------------------------- */
+:root[data-skin="deltarune"][data-theme="dark"] {
+    --blue-1: #EB0095;
+    --blue-2: #8B5CF6;
+    --blue-3: #3A2A66;
+    --blue-4: #14092A;
+    --accent: #FFCE32;
+
+    --theme: #14092A;
+    --entry: #1E1240;
+    --primary: #EDE6FF;
+    --secondary: #B4A3E6;
+    --tertiary: #3A2A66;
+    --content: #D9D0F5;
+    --code-block-bg: #0C0520;
+    --code-bg: #241848;
+    --border: rgba(122, 92, 255, 0.30);
+
+    --link: #75FBED;
+    --link-strong: #A6FFF5;
+    --soft: #2A1B52;
+    --soft-hover: #38246A;
+    --on-accent: #14092A;
+    --on-strong: #14092A;
+
+    --ink: #05030F;
+    --ink-deep: #100728;
+    --ink-deep-2: #1A0F38;
+    --ink-deep-3: #1E1240;
+    --ink-deeper: #0A0420;
+    --ink-deeper-2: #05030F;
+
+    --card-sheen: rgba(117, 251, 237, 0.05);
+    --card-panel: rgba(20, 9, 42, 0.55);
+    --card-panel-hover: rgba(30, 18, 64, 0.64);
+    --quote-bg: rgba(139, 92, 246, 0.12);
+    --particle-dot: rgba(117, 251, 237, 0.28);
+    --particle-active: rgba(235, 0, 149, 0.85);
+    --particle-glow: rgba(139, 92, 246, 0.22);
+    --buffer-track: rgba(117, 251, 237, 0.42);
+
+    --vignette: rgba(6, 2, 16, 0.5);
+    --vignette-strong: rgba(6, 2, 16, 0.68);
+
+    color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+   像素字体：只作用于拉丁 UI 位；中文字形自动回退到后面的中文字体。
+   -------------------------------------------------------------------------- */
+[data-skin="deltarune"] .logo a {
+    font-family: var(--font-pixel);
+    letter-spacing: 0.02em;
+}
+
+[data-skin="deltarune"] :where(
+    .entry-subtitle,
+    .entry-song-label,
+    .home-intro-eyebrow,
+    .mini-menu-kicker,
+    .mini-menu-title,
+    .mini-menu-panel-head h3,
+    .post-comments-kicker,
+    .player-subtitle,
+    .entry-stat,
+    .skin-option-desc
+) {
+    font-family: var(--font-pixel);
+}
+
+[data-skin="deltarune"] .entry-subtitle {
+    font-weight: 400;
+    letter-spacing: 0.12em;
+}
+
+/* --------------------------------------------------------------------------
+   母题装饰
+   -------------------------------------------------------------------------- */
+
+/* 首页简介卡片的星点：用皮肤色重绘（保留原遮罩渐隐） */
+:root[data-skin="deltarune"] .home-intro-stars {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 12L57 43L88 50L57 57L50 88L43 57L12 50L43 43Z' fill='%23D98A3D'/%3E%3C/svg%3E");
+    opacity: 0.14;
+}
+
+:root[data-skin="deltarune"][data-theme="dark"] .home-intro-stars {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 12L57 43L88 50L57 57L50 88L43 57L12 50L43 43Z' fill='%2375FBED'/%3E%3C/svg%3E");
+    opacity: 0.10;
+}
+
+/* 特色卡片右上角的同心圆 → 三角符文（Delta Rune） */
+:root[data-skin="deltarune"] .main > .first-entry::after {
+    top: 16px;
+    right: 22px;
+    width: 132px;
+    height: 72px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 72'%3E%3Cg fill='%23A9552B'%3E%3Cpath d='M6 66 30 66 18 38Z'/%3E%3Cpath d='M40 38 88 38 64 66Z'/%3E%3Cpath d='M98 66 122 66 110 38Z'/%3E%3C/g%3E%3Ccircle cx='64' cy='18' r='9' fill='none' stroke='%23A9552B' stroke-width='4'/%3E%3C/svg%3E") no-repeat center / contain;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    opacity: 0.24;
+}
+
+:root[data-skin="deltarune"][data-theme="dark"] .main > .first-entry::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 72'%3E%3Cg fill='%23EB0095'%3E%3Cpath d='M6 66 30 66 18 38Z'/%3E%3Cpath d='M40 38 88 38 64 66Z'/%3E%3Cpath d='M98 66 122 66 110 38Z'/%3E%3C/g%3E%3Ccircle cx='64' cy='18' r='9' fill='none' stroke='%23EB0095' stroke-width='4'/%3E%3C/svg%3E");
+    opacity: 0.26;
+}
+
+@media (max-width: 899px) {
+    :root[data-skin="deltarune"] .main > .first-entry::after {
+        width: 96px;
+        height: 54px;
+        top: 14px;
+        right: 16px;
+        opacity: 0.14;
+    }
+}
+
+/* 灵魂红心：喜欢图标改为 DETERMINATION 红 */
+:root[data-skin="deltarune"] .entry-stat-like svg,
+:root[data-skin="deltarune"] .post-engagement-stat:first-child svg,
+:root[data-skin="deltarune"] .post-like svg {
+    color: #E4002B;
+}
+
+/* 皮肤专属氛围层（由 site-theme.js 注入 #skin-decor） */
+#skin-decor {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    display: none;
+    pointer-events: none;
+}
+
+:root[data-skin="deltarune"] #skin-decor {
+    display: block;
+    background:
+        radial-gradient(62% 42% at 80% 4%, rgba(255, 206, 50, 0.20), transparent 70%),
+        conic-gradient(from 205deg at 84% -8%, rgba(255, 206, 50, 0.12), transparent 22%),
+        radial-gradient(130% 90% at 50% 122%, rgba(217, 138, 61, 0.14), transparent 62%);
+}
+
+:root[data-skin="deltarune"][data-theme="dark"] #skin-decor {
+    background:
+        radial-gradient(26% 52% at 50% -4%, rgba(117, 251, 237, 0.20), transparent 72%),
+        linear-gradient(180deg, rgba(139, 92, 246, 0.14), transparent 42%),
+        repeating-linear-gradient(0deg, rgba(139, 92, 246, 0.05) 0 1px, transparent 1px 46px),
+        repeating-linear-gradient(90deg, rgba(139, 92, 246, 0.05) 0 1px, transparent 1px 46px),
+        radial-gradient(1.4px 1.4px at 14% 22%, rgba(255, 255, 255, 0.7), transparent),
+        radial-gradient(1.2px 1.2px at 32% 64%, rgba(117, 251, 237, 0.7), transparent),
+        radial-gradient(1.8px 1.8px at 68% 30%, rgba(255, 255, 255, 0.6), transparent),
+        radial-gradient(1.3px 1.3px at 82% 72%, rgba(235, 0, 149, 0.7), transparent),
+        radial-gradient(1.1px 1.1px at 54% 84%, rgba(255, 255, 255, 0.5), transparent);
+}

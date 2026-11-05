@@ -1,0 +1,59 @@
+{{- /*
+    首页卡片「推荐歌曲」。
+    frontmatter：
+      song      曲库中的曲名（"歌名" 或 "作者 - 歌名"，大小写不敏感）
+      song_file 直接音频路径/URL（优先于 song）
+      song_note 可选小标签
+      song_title / song_artist 走路径时的显示名（可省略）
+    无可解析歌曲时不输出任何内容，调用方回退到摘要文本。
+*/ -}}
+{{- $song := .Params.song | default "" -}}
+{{- $songFile := .Params.song_file | default "" -}}
+{{- $note := .Params.song_note | default "" -}}
+{{- $audioExts := slice ".mp3" ".aac" ".m4a" ".ogg" ".opus" ".wav" ".flac" -}}
+{{- $resolved := false -}}
+{{- if $songFile -}}
+    {{- $resolved = dict
+        "src" ($songFile | relURL)
+        "lrc" ""
+        "title" (.Params.song_title | default (strings.TrimSuffix (path.Ext $songFile) (path.Base $songFile)))
+        "artist" (.Params.song_artist | default "")
+    -}}
+{{- else if $song -}}
+    {{- $looksLikePath := or (strings.Contains $song "/") (in $audioExts (lower (path.Ext $song))) -}}
+    {{- if $looksLikePath -}}
+        {{- $resolved = dict
+            "src" ($song | relURL)
+            "lrc" ""
+            "title" (.Params.song_title | default (strings.TrimSuffix (path.Ext $song) (path.Base $song)))
+            "artist" (.Params.song_artist | default "")
+        -}}
+    {{- else -}}
+        {{- $needle := lower (strings.TrimSpace $song) -}}
+        {{- range $t := (partialCached "music-data.html" .) -}}
+            {{- if eq $resolved false -}}
+                {{- $candidates := slice (lower $t.title) (lower $t.name) -}}
+                {{- with $t.artist -}}
+                    {{- $candidates = $candidates | append (lower (printf "%s - %s" . $t.title)) -}}
+                {{- end -}}
+                {{- if in $candidates $needle -}}
+                    {{- $resolved = dict "src" $t.src "lrc" $t.lrc "title" $t.title "artist" $t.artist -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+{{- with $resolved -}}
+<div class="entry-song" data-song data-song-src="{{ .src }}" data-song-lrc="{{ .lrc }}" data-song-title="{{ .title }}" data-song-artist="{{ .artist }}">
+    <button class="entry-song-play" type="button" aria-label="播放推荐歌曲：{{ .title }}">
+        <svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.14v13.72a1 1 0 0 0 1.54.84l10.5-6.86a1 1 0 0 0 0-1.68L9.54 4.3A1 1 0 0 0 8 5.14Z" fill="currentColor"/></svg>
+        <svg class="ic-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg>
+    </button>
+    <span class="entry-song-text">
+        <span class="entry-song-label">推荐歌曲</span>
+        <span class="entry-song-title">{{ .title }}</span>
+        {{- with .artist }}<span class="entry-song-artist">{{ . }}</span>{{ end }}
+    </span>
+    {{- with $note }}<span class="entry-song-note">{{ . }}</span>{{ end }}
+</div>
+{{- end -}}

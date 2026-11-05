@@ -299,8 +299,8 @@ body #isso-thread .isso-comment-footer a:hover {
 }
 
 #isso-thread .isso-textarea-wrapper:focus-within {
-    border-color: rgba(138, 174, 189, 0.62);
-    box-shadow: 0 0 0 3px rgba(138, 174, 189, 0.12);
+    border-color: color-mix(in srgb, var(--blue-1) 62%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue-1) 12%, transparent);
 }
 
 #isso-thread .isso-textarea {
@@ -373,8 +373,8 @@ body #isso-thread .isso-comment-footer a:hover {
 
 #isso-thread .isso-auth-section .isso-input-wrapper input:focus {
     outline: none;
-    border-color: rgba(138, 174, 189, 0.62);
-    box-shadow: 0 0 0 3px rgba(138, 174, 189, 0.12);
+    border-color: color-mix(in srgb, var(--blue-1) 62%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue-1) 12%, transparent);
 }
 
 #isso-thread .isso-auth-section .isso-post-action {
@@ -422,7 +422,7 @@ body #isso-thread .isso-comment-footer a:hover {
 
 #isso-thread .isso-auth-section .isso-post-action input:hover {
     background: var(--soft);
-    border-color: rgba(138, 174, 189, 0.46);
+    border-color: color-mix(in srgb, var(--blue-1) 46%, transparent);
 }
 
 #isso-thread .isso-auth-section .isso-post-action input[type="submit"]:hover {
@@ -434,7 +434,7 @@ body #isso-thread .isso-comment-footer a:hover {
 
 #isso-thread .isso-auth-section .isso-post-action input:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(138, 174, 189, 0.22);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue-1) 22%, transparent);
 }
 
 #isso-thread .isso-auth-section .isso-notification-section {

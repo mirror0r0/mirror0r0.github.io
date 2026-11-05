@@ -55,7 +55,6 @@
     if (!tracks.length) {
         player.hidden = true;
         root.style.setProperty("--player-height", "0px");
-        return;
     }
 
     const DEFAULT_VOLUME = 0.4;
@@ -170,6 +169,19 @@
     function setStatus(message) {
         if (ui.status) {
             ui.status.textContent = message || "";
+        }
+    }
+
+    function dispatchTrackChange() {
+        try {
+            window.dispatchEvent(new CustomEvent("papermod:trackchange", {
+                detail: {
+                    src: currentTrack ? currentTrack.src : "",
+                    playing: !audio.paused && !audio.ended
+                }
+            }));
+        } catch (error) {
+            // 不支持 CustomEvent 构造时忽略。
         }
     }
 
@@ -545,6 +557,7 @@
         updateTrackListActive();
         loadLyrics(currentTrack);
         updateMediaSession(currentTrack);
+        dispatchTrackChange();
 
         if (autoplay) {
             playAudio();
@@ -1093,6 +1106,7 @@
     audio.addEventListener("play", () => {
         setStatus("");
         updatePlayButton(true);
+        dispatchTrackChange();
         updateLyrics(true);
         schedulePreloadNext();
         capturePlayback();
@@ -1103,6 +1117,7 @@
     audio.addEventListener("pause", () => {
         updatePlayButton(false);
         stopVisualizer();
+        dispatchTrackChange();
 
         // 页面跳转时浏览器可能会先重置媒体，再触发 pause；此时保留最后一次有效快照。
         if (
@@ -1231,6 +1246,43 @@
     setupMediaSession();
     loadTrack(startIndex, false, restoreState);
     syncPlayerSpace();
+
+    // 供首页卡片的「推荐歌曲」调用：播放指定曲目；不在曲库中则临时加入列表。
+    window.__papermodPlayer = {
+        play(meta) {
+            if (!meta || !meta.src) {
+                return;
+            }
+
+            let index = tracks.findIndex((track) => track.src === meta.src);
+
+            if (index < 0) {
+                tracks.push({
+                    title: meta.title || "推荐歌曲",
+                    name: meta.title || "推荐歌曲",
+                    subtitle: meta.artist || "",
+                    artist: meta.artist || "",
+                    format: "AUDIO",
+                    src: meta.src,
+                    lrc: meta.lrc || ""
+                });
+                index = tracks.length - 1;
+                buildTrackList();
+            }
+
+            if (player.hidden) {
+                player.hidden = false;
+                syncPlayerSpace();
+            }
+
+            loadTrack(index, true);
+
+            player.classList.remove("is-ping");
+            void player.offsetWidth;
+            player.classList.add("is-ping");
+            window.setTimeout(() => player.classList.remove("is-ping"), 900);
+        }
+    };
 
     if (window.ResizeObserver) {
         new ResizeObserver(syncPlayerSpace).observe(player);
