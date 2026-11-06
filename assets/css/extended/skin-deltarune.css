@@ -52,9 +52,9 @@
     --ink-deeper: #2A1F17;
     --ink-deeper-2: #241A13;
 
-    --card-sheen: rgba(255, 255, 255, 0.55);
-    --card-panel: rgba(251, 246, 236, 0.60);
-    --card-panel-hover: rgba(255, 252, 246, 0.72);
+    --card-sheen: rgba(255, 255, 255, 0.32);
+    --card-panel: rgba(251, 246, 236, 0.34);
+    --card-panel-hover: rgba(255, 252, 246, 0.46);
     --quote-bg: rgba(232, 185, 120, 0.20);
     --particle-dot: rgba(217, 138, 61, 0.34);
     --particle-active: rgba(169, 85, 43, 0.82);
@@ -101,9 +101,9 @@
     --ink-deeper: #0A0420;
     --ink-deeper-2: #05030F;
 
-    --card-sheen: rgba(117, 251, 237, 0.05);
-    --card-panel: rgba(20, 9, 42, 0.55);
-    --card-panel-hover: rgba(30, 18, 64, 0.64);
+    --card-sheen: rgba(117, 251, 237, 0.04);
+    --card-panel: rgba(20, 9, 42, 0.38);
+    --card-panel-hover: rgba(30, 18, 64, 0.48);
     --quote-bg: rgba(139, 92, 246, 0.12);
     --particle-dot: rgba(117, 251, 237, 0.28);
     --particle-active: rgba(235, 0, 149, 0.85);

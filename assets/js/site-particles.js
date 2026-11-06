@@ -100,6 +100,154 @@
         };
     }
 
+    // ----------------------------------------------------------------------
+    // DELTARUNE：左键让粒子汇聚成红心；右键扩散成内凹弧四角星并发光
+    // ----------------------------------------------------------------------
+    const SHAPE_CAPTURE = 250;
+    const HEART_SIZE = 105;
+    const STAR_SIZE = 118;
+    const SHAPE_PULL = 0.22;
+    const SHAPE_DAMP = 0.82;
+    const shapePoint = { x: 0, y: 0 };
+
+    function shapeModeActive() {
+        if (html.dataset.skin !== "deltarune" || !mouse.active) {
+            return null;
+        }
+
+        if (mouse.left) {
+            return "heart";
+        }
+
+        if (mouse.right) {
+            return "star";
+        }
+
+        return null;
+    }
+
+    // 心形：采样经典心形参数方程，按角度取最大半径并归一化后查表。
+    // 空的角度分桶做环向线性插值，避免目标半径塌成 0。
+    const heartTable = (() => {
+        const N = 360;
+        const M = 20000;
+        const bins = new Float32Array(N);
+        const hit = new Uint8Array(N);
+        const raw = [];
+        let minX = Infinity;
+        let maxX = -Infinity;
+        let minY = Infinity;
+        let maxY = -Infinity;
+
+        for (let i = 0; i < M; i += 1) {
+            const t = (i / M) * Math.PI * 2;
+            const s = Math.sin(t);
+            const x = 16 * s * s * s;
+            const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+            raw.push(x, y);
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+        }
+
+        const midX = (minX + maxX) / 2;
+        const midY = (minY + maxY) / 2;
+        let maxR = 0;
+
+        for (let i = 0; i < raw.length; i += 2) {
+            const x = raw[i] - midX;
+            const y = -(raw[i + 1] - midY);
+            const ang = Math.atan2(y, x);
+            const r = Math.hypot(x, y);
+            let b = Math.floor(((ang + Math.PI) / (Math.PI * 2)) * N);
+            b = ((b % N) + N) % N;
+
+            if (r > bins[b]) {
+                bins[b] = r;
+                hit[b] = 1;
+            }
+
+            if (r > maxR) maxR = r;
+        }
+
+        for (let i = 0; i < N; i += 1) {
+            if (hit[i]) continue;
+
+            let back = 1;
+            let fwd = 1;
+            while (back < N && !hit[((i - back) % N + N) % N]) back += 1;
+            while (fwd < N && !hit[((i + fwd) % N + N) % N]) fwd += 1;
+
+            if (back >= N || fwd >= N) {
+                bins[i] = 0;
+                continue;
+            }
+
+            const bIdx = ((i - back) % N + N) % N;
+            const fIdx = ((i + fwd) % N + N) % N;
+            const t = back / (back + fwd);
+            bins[i] = bins[bIdx] * (1 - t) + bins[fIdx] * t;
+            hit[i] = 1;
+        }
+
+        for (let i = 0; i < N; i += 1) {
+            bins[i] /= maxR || 1;
+        }
+
+        return bins;
+    })();
+
+    function shapeTarget(mode, ang) {
+        if (mode === "heart") {
+            const N = heartTable.length;
+            let b = Math.floor(((ang + Math.PI) / (Math.PI * 2)) * N);
+            b = ((b % N) + N) % N;
+            const hr = heartTable[b] * HEART_SIZE;
+            shapePoint.x = Math.cos(ang) * hr;
+            shapePoint.y = Math.sin(ang) * hr;
+            return;
+        }
+
+        // 内凹弧四角星：星形线（astroid）的极坐标半径，四角沿坐标轴。
+        const c = Math.abs(Math.cos(ang));
+        const s = Math.abs(Math.sin(ang));
+        const denom = Math.pow(c, 2 / 3) + Math.pow(s, 2 / 3);
+        const r = STAR_SIZE / Math.pow(denom, 1.5);
+        shapePoint.x = Math.cos(ang) * r;
+        shapePoint.y = Math.sin(ang) * r;
+    }
+
+    function drawShapeLayer(mode) {
+        const heart = mode === "heart";
+
+        for (let pass = 0; pass < 3; pass += 1) {
+            if (heart) {
+                ctx.fillStyle = pass === 0
+                    ? "rgba(255, 60, 60, 0.16)"
+                    : pass === 1
+                        ? "rgba(255, 40, 50, 0.50)"
+                        : "rgba(255, 34, 44, 0.96)";
+            } else {
+                ctx.fillStyle = pass === 0
+                    ? "rgba(150, 255, 240, 0.16)"
+                    : pass === 1
+                        ? "rgba(190, 255, 250, 0.50)"
+                        : "rgba(255, 255, 255, 0.98)";
+            }
+
+            const scale = pass === 0 ? 3.2 : pass === 1 ? 1.7 : 1.15;
+
+            for (let i = 0; i < particles.length; i += 1) {
+                const particle = particles[i];
+
+                if (particle.shape === mode) {
+                    drawDot(particle.x, particle.y, particle.r * scale);
+                }
+            }
+        }
+    }
+
     function hash(row, col) {
         let value = (row * 374761393 + col * 668265263) | 0;
         value = (value ^ (value >>> 13)) * 1274126177;
@@ -422,12 +570,16 @@
     }
 
     function update(dt) {
-        const sign = mouse.left ? REPEL : 1;
-        const boost = mouse.right ? RIGHT_BOOST : 1;
+        const shapeMode = shapeModeActive();
+        const sign = !shapeMode && mouse.left ? REPEL : 1;
+        const boost = !shapeMode && mouse.right ? RIGHT_BOOST : 1;
         const damping = Math.pow(DAMPING, dt);
+        const shapeDamp = Math.pow(SHAPE_DAMP, dt);
+        const shapePull = SHAPE_PULL * dt;
 
         for (let i = 0; i < particles.length; i += 1) {
             const particle = particles[i];
+            particle.shape = null;
 
             if (particle.swap) {
                 const swap = particle.swap;
@@ -458,6 +610,27 @@
 
             if (particle.cooldown > 0) {
                 particle.cooldown = Math.max(0, particle.cooldown - dt);
+            }
+
+            if (shapeMode) {
+                const sdx = mouse.x - particle.x;
+                const sdy = mouse.y - particle.y;
+
+                if (sdx * sdx + sdy * sdy < SHAPE_CAPTURE * SHAPE_CAPTURE) {
+                    // 用「从鼠标指向粒子」的方向；若用鼠标-粒子方向，粒子跨过光标时目标会翻转而被困在中心。
+                    const ang = Math.atan2(-sdy, -sdx);
+                    shapeTarget(shapeMode, ang);
+
+                    const tx = mouse.x + shapePoint.x;
+                    const ty = mouse.y + shapePoint.y;
+
+                    particle.vx = (particle.vx + (tx - particle.x) * shapePull) * shapeDamp;
+                    particle.vy = (particle.vy + (ty - particle.y) * shapePull) * shapeDamp;
+                    particle.x += particle.vx * dt;
+                    particle.y += particle.vy * dt;
+                    particle.shape = shapeMode;
+                    continue;
+                }
             }
 
             if (mouse.active) {
@@ -613,6 +786,12 @@
             }
 
             ctx.globalAlpha = 1;
+        }
+
+        const shapeMode = shapeModeActive();
+
+        if (shapeMode) {
+            drawShapeLayer(shapeMode);
         }
     }
 
