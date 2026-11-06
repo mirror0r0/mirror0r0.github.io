@@ -278,22 +278,22 @@
 @media (max-width: 899px) {
     :root[data-skin="deltarune"][data-theme="light"][data-page="home"] #skin-decor::before {
         background-image: url("/deltarune/art/home-mobile-light.jpg");
-        opacity: 0.18;
+        opacity: 0.36;
     }
 
     :root[data-skin="deltarune"][data-theme="dark"][data-page="home"] #skin-decor::before {
         background-image: url("/deltarune/art/home-mobile-dark.jpg");
-        opacity: 0.26;
+        opacity: 0.52;
     }
 
     :root[data-skin="deltarune"][data-theme="light"][data-page="about"] #skin-decor::before {
         background-image: url("/deltarune/art/about-mobile-light.jpg");
-        opacity: 0.18;
+        opacity: 0.36;
     }
 
     :root[data-skin="deltarune"][data-theme="dark"][data-page="about"] #skin-decor::before {
         background-image: url("/deltarune/art/about-dark.jpg");
-        opacity: 0.26;
+        opacity: 0.52;
     }
 }
 
@@ -301,31 +301,31 @@
 @media (min-width: 900px) {
     :root[data-skin="deltarune"][data-theme="light"][data-page="home"][data-art="a"] #skin-decor::before {
         background-image: url("/deltarune/art/home-desktop-light-a.jpg");
-        opacity: 0.16;
+        opacity: 0.32;
     }
 
     :root[data-skin="deltarune"][data-theme="light"][data-page="home"][data-art="b"] #skin-decor::before {
         background-image: url("/deltarune/art/home-desktop-light-b.jpg");
-        opacity: 0.16;
+        opacity: 0.32;
     }
 
     :root[data-skin="deltarune"][data-theme="dark"][data-page="home"][data-art="a"] #skin-decor::before {
         background-image: url("/deltarune/art/home-desktop-dark-a.jpg");
-        opacity: 0.24;
+        opacity: 0.48;
     }
 
     :root[data-skin="deltarune"][data-theme="dark"][data-page="home"][data-art="b"] #skin-decor::before {
         background-image: url("/deltarune/art/home-desktop-dark-b.jpg");
-        opacity: 0.24;
+        opacity: 0.48;
     }
 
     :root[data-skin="deltarune"][data-theme="light"][data-page="about"] #skin-decor::before {
         background-image: url("/deltarune/art/about-desktop-light.jpg");
-        opacity: 0.16;
+        opacity: 0.32;
     }
 
     :root[data-skin="deltarune"][data-theme="dark"][data-page="about"] #skin-decor::before {
         background-image: url("/deltarune/art/about-dark.jpg");
-        opacity: 0.26;
+        opacity: 0.52;
     }
 }
