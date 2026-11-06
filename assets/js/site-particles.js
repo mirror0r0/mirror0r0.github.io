@@ -106,8 +106,8 @@
     const SHAPE_CAPTURE = 250;
     const HEART_SIZE = 105;
     const STAR_SIZE = 118;
-    const SHAPE_PULL = 0.22;
-    const SHAPE_DAMP = 0.82;
+    const SHAPE_PULL = 0.10;
+    const SHAPE_DAMP = 0.86;
     const shapePoint = { x: 0, y: 0 };
 
     function shapeModeActive() {

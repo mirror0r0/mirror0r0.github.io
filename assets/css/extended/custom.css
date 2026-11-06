@@ -33,9 +33,9 @@
     --soft: var(--blue-3);
     --soft-hover: var(--blue-2);
     --on-accent: #2E4854;
-    --card-sheen: rgba(255, 255, 255, 0.42);
-    --card-panel: color-mix(in srgb, var(--entry) 34%, transparent);
-    --card-panel-hover: color-mix(in srgb, var(--entry) 46%, transparent);
+    --card-sheen: rgba(255, 255, 255, 0.16);
+    --card-panel: color-mix(in srgb, var(--entry) 12%, transparent);
+    --card-panel-hover: color-mix(in srgb, var(--entry) 20%, transparent);
     --card-shadow: 0 2px 4px color-mix(in srgb, var(--ink) 6%, transparent),
         0 24px 52px -26px color-mix(in srgb, var(--ink) 44%, transparent);
     --card-shadow-lift: 0 3px 9px color-mix(in srgb, var(--ink) 4.5%, transparent),
@@ -76,8 +76,8 @@
     --soft-hover: #38545F;
     --on-accent: #2E4854;
     --card-sheen: color-mix(in srgb, var(--blue-3) 5.5%, transparent);
-    --card-panel: color-mix(in srgb, var(--ink-deep) 38%, transparent);
-    --card-panel-hover: color-mix(in srgb, var(--ink-deep-3) 48%, transparent);
+    --card-panel: color-mix(in srgb, var(--ink-deep) 14%, transparent);
+    --card-panel-hover: color-mix(in srgb, var(--ink-deep-3) 22%, transparent);
     --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.30),
         0 24px 52px -26px rgba(0, 0, 0, 0.78);
     --card-shadow-lift: 0 3px 10px rgba(0, 0, 0, 0.22),
@@ -553,7 +553,7 @@ body.list,
     --spot-x: 50%;
     --spot-y: 40%;
     --spot-opacity: 0;
-    --content-panel: color-mix(in srgb, var(--entry) 34%, transparent);
+    --content-panel: color-mix(in srgb, var(--entry) 12%, transparent);
     --content-spot: rgba(255, 255, 255, 0.58);
     position: relative;
     isolation: isolate;
@@ -565,8 +565,8 @@ body.list,
     box-shadow:
         0 2px 4px color-mix(in srgb, var(--ink) 4%, transparent),
         0 30px 68px -44px color-mix(in srgb, var(--ink) 48%, transparent);
-    -webkit-backdrop-filter: blur(20px) saturate(135%);
-    backdrop-filter: blur(20px) saturate(135%);
+    -webkit-backdrop-filter: blur(6px) saturate(110%);
+    backdrop-filter: blur(6px) saturate(110%);
 }
 
 .post-single .post-content::before {
@@ -591,7 +591,7 @@ body.list,
 }
 
 :root[data-theme="dark"] .post-single .post-content {
-    --content-panel: color-mix(in srgb, var(--ink-deep) 36%, transparent);
+    --content-panel: color-mix(in srgb, var(--ink-deep) 14%, transparent);
     --content-spot: rgba(4, 13, 17, 0.58);
     box-shadow:
         0 2px 4px rgba(0, 0, 0, 0.22),
@@ -935,8 +935,8 @@ details.toc {
     border: 1px solid var(--border);
     border-radius: 22px;
     box-shadow: var(--card-shadow);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
-    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(6px) saturate(110%);
+    backdrop-filter: blur(6px) saturate(110%);
     animation: pm-card-rise 0.58s cubic-bezier(0.2, 0.72, 0.2, 1) backwards;
     transition:
         transform 0.26s cubic-bezier(0.2, 0.72, 0.2, 1),
