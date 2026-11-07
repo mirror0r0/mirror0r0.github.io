@@ -62,15 +62,18 @@ pgrep -x hugo      # 有输出就等它结束
 
 （用 `pgrep -x` 而不是 `pgrep -f hugo`，后者会匹配到执行命令的 shell 自己。）
 
-## 5. 图片管线（新增）
+## 5. 图片管线：压缩在上传端，构建期禁止转码
 
-`layouts/_default/_markup/render-image.html` 会对**每张光栅图**生成 800/1600 两档 WebP
-（GIF/SVG 跳过），并补 `width/height`、`loading=lazy`、`decoding=async`、`srcset`。
-
-- 首次处理 25 张上传图约 47 次转换，本地约 9s；服务器会更慢，属正常。
-- 之后走 `resources/_gen` 缓存（已 gitignore），增量构建很快。
-- 依赖第 1 节的 `assets/assets` 与 `static/uploads -> assets/uploads` 两个挂载。
-- 原图仍会被复制到 `public/uploads`（旧链接兼容），磁盘占用不变，但页面引用的已是 WebP。
+- **上传端**（`admin/server/src/index.ts` 的 `/api/uploads`）用 `sharp`（libvips）
+  把图片转 WebP、最长边限制 1600px；GIF/SVG/音频原样保留。
+  实测 48MP 图处理约 184ms、峰值内存约 66MB、输出约 117KB，内存友好。
+- `layouts/_default/_markup/render-image.html` **只补 `width/height`、`loading=lazy`、
+  `decoding=async`，不在构建期做任何转码**。
+- **禁止在构建期做图片转码**：这台服务器只有约 700MB 内存，6000x8000 的图单次解码约 192MB，
+  曾直接把机器拖死（SSH/HTTP 全部无响应，只能强制重启）。
+- `static/uploads -> assets/uploads` 挂载仍保留（渲染钩子读取宽高用）。
+- 服务器上运行 Studio 需要先 `npm install`（安装 sharp 原生依赖），
+  再 `npm run build` 并重启服务，否则上传压缩不生效。
 
 ## 6. Studio 预览临时文件泄漏
 

@@ -1,9 +1,9 @@
 {{- /*
     项目级图片渲染钩子：
     - 先尝试当作页面资源 / 全局资源解析（解析成功时替换为 RelPermalink）；
-    - 光栅图一律转 WebP，并生成 800/1600 两个宽度做 srcset（不放大，小图不处理）；
     - 补 width/height 减少布局跳动（CLS），始终 loading=lazy + decoding=async；
-    - GIF / SVG 保持原样（避免动图被拍平、矢量被栅格化）。
+    - 不在构建期做图片转码：压缩在上传端用 sharp 完成（libvips 低内存），
+      服务器只有约 700MB 内存，构建期解码大图会直接打爆（已踩过坑）。
 */ -}}
 {{- $u := urls.Parse .Destination -}}
 {{- $src := $u.String -}}
@@ -23,33 +23,8 @@
   {{- end -}}
 {{- end -}}
 {{- $attrs := merge .Attributes (dict "alt" .Text "src" $src "title" (.Title | transform.HTMLEscape) "loading" "lazy" "decoding" "async") -}}
-{{- if and $res (eq $res.ResourceType "image") -}}
-  {{- if gt $res.Width 0 -}}
-    {{- $attrs = merge $attrs (dict "width" (printf "%d" $res.Width) "height" (printf "%d" $res.Height)) -}}
-  {{- end -}}
-  {{- $sub := lower $res.MediaType.SubType -}}
-  {{- $pixels := mul $res.Width $res.Height -}}
-  {{- /* 服务器内存很小（约 700MB），超大图解码会直接打爆内存：
-         单张 48MP 解码约需 192MB。超过 16MP 只保留原图 + 宽高，不做转码。 */ -}}
-  {{- if and (ne $sub "gif") (ne $sub "svg") (ge $res.Width 480) (le $pixels 16000000) -}}
-    {{- $large := $res -}}
-    {{- $small := $res -}}
-    {{- if gt $res.Width 1600 -}}
-      {{- $large = $res.Resize "1600x webp q82" -}}
-    {{- else -}}
-      {{- $large = $res.Process "webp q82" -}}
-    {{- end -}}
-    {{- if gt $res.Width 800 -}}
-      {{- $small = $res.Resize "800x webp q82" -}}
-    {{- else -}}
-      {{- $small = $large -}}
-    {{- end -}}
-    {{- $attrs = merge $attrs (dict
-      "src" $large.RelPermalink
-      "srcset" (printf "%s %dw, %s %dw" $small.RelPermalink $small.Width $large.RelPermalink $large.Width)
-      "sizes" "(max-width: 820px) 100vw, 760px"
-    ) -}}
-  {{- end -}}
+{{- if and $res (eq $res.ResourceType "image") (gt $res.Width 0) -}}
+  {{- $attrs = merge $attrs (dict "width" (printf "%d" $res.Width) "height" (printf "%d" $res.Height)) -}}
 {{- end -}}
 <img
   {{- range $k, $v := $attrs -}}
