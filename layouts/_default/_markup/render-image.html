@@ -1,8 +1,9 @@
 {{- /*
-    项目级图片渲染钩子：在 PaperMod 原版逻辑上补充 width/height 与 decoding。
-    - 仍先尝试当作页面资源 / 全局资源解析（换了 URL 时同步替换成 RelPermalink）；
-    - 命中资源时补 width/height，减少图文布局跳动（CLS）；
-    - 始终加 loading=lazy 与 decoding=async。
+    项目级图片渲染钩子：
+    - 先尝试当作页面资源 / 全局资源解析（解析成功时替换为 RelPermalink）；
+    - 光栅图一律转 WebP，并生成 800/1600 两个宽度做 srcset（不放大，小图不处理）；
+    - 补 width/height 减少布局跳动（CLS），始终 loading=lazy + decoding=async；
+    - GIF / SVG 保持原样（避免动图被拍平、矢量被栅格化）。
 */ -}}
 {{- $u := urls.Parse .Destination -}}
 {{- $src := $u.String -}}
@@ -22,8 +23,30 @@
   {{- end -}}
 {{- end -}}
 {{- $attrs := merge .Attributes (dict "alt" .Text "src" $src "title" (.Title | transform.HTMLEscape) "loading" "lazy" "decoding" "async") -}}
-{{- if and $res (not (index $attrs "width")) -}}
-  {{- $attrs = merge $attrs (dict "width" (printf "%d" $res.Width) "height" (printf "%d" $res.Height)) -}}
+{{- if and $res (eq $res.ResourceType "image") -}}
+  {{- if gt $res.Width 0 -}}
+    {{- $attrs = merge $attrs (dict "width" (printf "%d" $res.Width) "height" (printf "%d" $res.Height)) -}}
+  {{- end -}}
+  {{- $sub := lower $res.MediaType.SubType -}}
+  {{- if and (ne $sub "gif") (ne $sub "svg") (ge $res.Width 480) -}}
+    {{- $large := $res -}}
+    {{- $small := $res -}}
+    {{- if gt $res.Width 1600 -}}
+      {{- $large = $res.Resize "1600x webp q82" -}}
+    {{- else -}}
+      {{- $large = $res.Process "webp q82" -}}
+    {{- end -}}
+    {{- if gt $res.Width 800 -}}
+      {{- $small = $res.Resize "800x webp q82" -}}
+    {{- else -}}
+      {{- $small = $large -}}
+    {{- end -}}
+    {{- $attrs = merge $attrs (dict
+      "src" $large.RelPermalink
+      "srcset" (printf "%s %dw, %s %dw" $small.RelPermalink $small.Width $large.RelPermalink $large.Width)
+      "sizes" "(max-width: 820px) 100vw, 760px"
+    ) -}}
+  {{- end -}}
 {{- end -}}
 <img
   {{- range $k, $v := $attrs -}}
