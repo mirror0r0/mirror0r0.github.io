@@ -24,14 +24,21 @@ theme = 'PaperMod'
 [outputs]
   home = ["HTML", "RSS", "JSON"]
 
-# 让项目根目录的 deta2（头像、音乐、歌词）成为可访问的静态资源。
+# meme/ 和 deta2/ 是体积很大的静态资源，不放进 Hugo 的 static 目录；
+# 生产环境由 Nginx 直接 alias 到源目录（见 admin/deploy/nginx-studio.conf）。
 [module]
   [[module.mounts]]
     source = 'static'
     target = 'static'
+  # 注意：一旦自定义 module.mounts，Hugo 就不再自动挂载默认组件，
+  # 必须显式恢复 assets，否则 assets/css 与 assets/js 会整体丢失（样式和脚本全没）。
   [[module.mounts]]
-    source = 'deta2'
-    target = 'static/deta2'
+    source = 'assets'
+    target = 'assets'
+  # 上传图片额外挂进 assets：仅供图片渲染钩子读取宽高，RelPermalink 与原 URL 一致。
+  [[module.mounts]]
+    source = 'static/uploads'
+    target = 'assets/uploads'
 
 # PaperMod 内置的标题图标：显示在站点标题左侧。
 [params.label]

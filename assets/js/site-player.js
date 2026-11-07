@@ -86,7 +86,7 @@
     const savedVolume = Number(prefs.volume);
 
     try {
-        audio.preload = "auto";
+        audio.preload = "metadata";
         audio.volume = Number.isFinite(savedVolume)
             ? Math.min(1, Math.max(0, savedVolume))
             : DEFAULT_VOLUME;

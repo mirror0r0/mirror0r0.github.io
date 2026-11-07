@@ -1,0 +1,34 @@
+{{- /*
+    项目级图片渲染钩子：在 PaperMod 原版逻辑上补充 width/height 与 decoding。
+    - 仍先尝试当作页面资源 / 全局资源解析（换了 URL 时同步替换成 RelPermalink）；
+    - 命中资源时补 width/height，减少图文布局跳动（CLS）；
+    - 始终加 loading=lazy 与 decoding=async。
+*/ -}}
+{{- $u := urls.Parse .Destination -}}
+{{- $src := $u.String -}}
+{{- $res := false -}}
+{{- if not $u.IsAbs -}}
+  {{- $path := strings.TrimPrefix "./" $u.Path -}}
+  {{- $path = strings.TrimPrefix "/" $path -}}
+  {{- with or (.PageInner.Resources.Get $path) (resources.Get $path) -}}
+    {{- $res = . -}}
+    {{- $src = .RelPermalink -}}
+    {{- with $u.RawQuery -}}
+      {{- $src = printf "%s?%s" $src . -}}
+    {{- end -}}
+    {{- with $u.Fragment -}}
+      {{- $src = printf "%s#%s" $src . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $attrs := merge .Attributes (dict "alt" .Text "src" $src "title" (.Title | transform.HTMLEscape) "loading" "lazy" "decoding" "async") -}}
+{{- if and $res (not (index $attrs "width")) -}}
+  {{- $attrs = merge $attrs (dict "width" (printf "%d" $res.Width) "height" (printf "%d" $res.Height)) -}}
+{{- end -}}
+<img
+  {{- range $k, $v := $attrs -}}
+    {{- if $v -}}
+      {{- printf " %s=%q" $k $v | safeHTMLAttr -}}
+    {{- end -}}
+  {{- end -}}>
+{{- /**/ -}}
