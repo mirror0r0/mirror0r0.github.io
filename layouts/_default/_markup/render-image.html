@@ -28,7 +28,10 @@
     {{- $attrs = merge $attrs (dict "width" (printf "%d" $res.Width) "height" (printf "%d" $res.Height)) -}}
   {{- end -}}
   {{- $sub := lower $res.MediaType.SubType -}}
-  {{- if and (ne $sub "gif") (ne $sub "svg") (ge $res.Width 480) -}}
+  {{- $pixels := mul $res.Width $res.Height -}}
+  {{- /* 服务器内存很小（约 700MB），超大图解码会直接打爆内存：
+         单张 48MP 解码约需 192MB。超过 16MP 只保留原图 + 宽高，不做转码。 */ -}}
+  {{- if and (ne $sub "gif") (ne $sub "svg") (ge $res.Width 480) (le $pixels 16000000) -}}
     {{- $large := $res -}}
     {{- $small := $res -}}
     {{- if gt $res.Width 1600 -}}
